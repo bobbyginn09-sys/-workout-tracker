@@ -28,13 +28,14 @@ input,select,textarea{width:100%;background:#0b1220;border:1px solid var(--line)
 <div class="card"><div class="metric" id="prs">0</div><div class="label">PRs tracked</div></div>
 <div class="card"><div class="metric" id="trend">0%</div><div class="label">Volume trend</div></div>
 <div class="card"><div class="metric" id="lastCardio">—</div><div class="label">Last cardio</div></div>
-<div class="card wide"><h3>Next Up</h3><div id="next"></div><div class="actions"><button class="btn" onclick="openDay(state.currentDay)">Start Workout</button><button class="btn secondary" onclick="nextDay()">Skip / Next Day</button></div></div>
+<div class="card wide"><h3>Next Up</h3><div id="next"></div><div class="divider"></div><h3>Coach Summary</h3><div class="mini" id="coachSummary">No summary yet.</div><div class="actions"><button class="btn" onclick="openDay(state.currentDay)">Start Workout</button><button class="btn secondary" onclick="nextDay()">Skip / Next Day</button></div></div>
 </div>
+<div id="draftCard"></div>
 <h2>Your 8-Day Split</h2><div id="days"></div>
 </section>
 
 <section id="workout" class="screen">
-<div class="card wide"><div class="top"><div><h2 id="wtitle" style="margin:0"></h2><div class="mini" id="wsub"></div></div><button class="btn secondary" onclick="show('home')">Back</button></div><div class="divider"></div><div id="exlist"></div>
+<div class="card wide"><div class="top"><div><h2 id="wtitle" style="margin:0"></h2><div class="mini" id="wsub"></div><div class="mini" id="autosaveStatus">Autosave ready.</div></div><button class="btn secondary" onclick="show('home')">Back</button></div><div class="divider"></div><div id="exlist"></div>
 <h3>Cardio Finisher</h3><div class="row"><select id="ctype"><option>Stairmaster</option><option>Run</option><option>Walk</option><option>Bike</option><option>None</option></select><input id="ctime" type="number" placeholder="Minutes"></div><div class="row"><input id="cdist" placeholder="Miles / floors"><input id="clevel" placeholder="Level / pace notes"></div><textarea id="notes" placeholder="Workout notes"></textarea><div class="actions"><button class="btn" onclick="saveWorkout()">Save Workout</button><button class="btn secondary" onclick="addExercise()">Add Exercise</button></div></div>
 </section>
 
@@ -88,7 +89,7 @@ input,select,textarea{width:100%;background:#0b1220;border:1px solid var(--line)
 </div>
 </section>
 
-<section id="settings" class="screen"><h2>Settings</h2><div class="card wide"><h3>Smith Machine</h3><div class="row"><div><div class="label">Smith resistance</div><input id="bar" type="number"></div><div><div class="label">Default add per side</div><input id="jump" type="number"></div></div><button class="btn" onclick="saveSettings()">Save Settings</button><div class="divider"></div><h3>Backup</h3><div class="actions"><button class="btn secondary" onclick="exportData()">Export Data</button><button class="btn danger" onclick="resetData()">Reset App</button></div><textarea id="exportBox" placeholder="Export appears here"></textarea></div></section>
+<section id="settings" class="screen"><h2>Settings</h2><div class="card wide"><h3>Smith Machine</h3><div class="row"><div><div class="label">Smith resistance</div><input id="bar" type="number"></div><div><div class="label">Default add per side</div><input id="jump" type="number"></div></div><button class="btn" onclick="saveSettings()">Save Settings</button><div class="divider"></div><h3>Backup</h3><div class="actions"><button class="btn secondary" onclick="exportData()">Export Data</button><button class="btn secondary" onclick="state.coaching={};save();render();alert('Coaching targets reset.')">Reset Coaching</button><button class="btn danger" onclick="resetData()">Reset App</button></div><textarea id="exportBox" placeholder="Export appears here"></textarea></div></section>
 </div>
 <nav class="tabs"><button class="tab active" onclick="show('home',this)">Home</button><button class="tab" onclick="show('progress',this)">Progress</button><button class="tab" onclick="show('history',this)">History</button><button class="tab" onclick="show('nutrition',this)">Nutrition</button><button class="tab" onclick="show('settings',this)">Settings</button></nav>
 
@@ -105,8 +106,57 @@ const split=[
 {name:"Rest",rest:true,exercises:[]}
 ];
 const plates=[45,35,25,10,5,2.5];
-let state=JSON.parse(localStorage.getItem("atlasPF")||"null")||{split,logs:[],currentDay:0,settings:{bar:25,jump:5},nutrition:{targets:{protein:220,fat:80,carbs:180,calories:2380},meals:[]}};
+let state=JSON.parse(localStorage.getItem("atlasPF")||"null")||{split,logs:[],currentDay:0,settings:{bar:25,jump:5},nutrition:{targets:{protein:220,fat:80,carbs:180,calories:2380},meals:[]},draft:null};
 let activeDay=0, entries=[];
+
+function autosaveDraft(){
+  if(!entries || !entries.length) return;
+  state.draft={
+    savedAt:new Date().toISOString(),
+    activeDay,
+    entries,
+    cardio:{type:ctype?.value||"Stairmaster",time:ctime?.value||"",distance:cdist?.value||"",level:clevel?.value||""},
+    notes:notes?.value||""
+  };
+  save();
+  if(document.getElementById("autosaveStatus")){
+    autosaveStatus.textContent="Autosaved " + new Date().toLocaleTimeString([], {hour:"numeric", minute:"2-digit"});
+  }
+}
+function restoreDraft(){
+  if(!state.draft){alert("No unfinished workout found.");return}
+  activeDay=state.draft.activeDay;
+  let d=state.split[activeDay];
+  wtitle.textContent=`Day ${activeDay+1}: ${d.name}`;
+  wsub.textContent=d.rest?"Rest, recovery, mobility, or light cardio.":"Restored unfinished workout. Keep logging where you left off.";
+  entries=state.draft.entries||[];
+  ctype.value=state.draft.cardio?.type||"Stairmaster";
+  ctime.value=state.draft.cardio?.time||"";
+  cdist.value=state.draft.cardio?.distance||"";
+  clevel.value=state.draft.cardio?.level||"";
+  notes.value=state.draft.notes||"";
+  renderWorkout();
+  show("workout");
+  if(document.getElementById("autosaveStatus")) autosaveStatus.textContent="Restored autosaved workout.";
+}
+function clearDraft(){
+  state.draft=null;
+  save();
+}
+function wireAutosave(){
+  document.addEventListener("input", function(e){
+    if(document.getElementById("workout").classList.contains("active")) autosaveDraft();
+  });
+  document.addEventListener("change", function(e){
+    if(document.getElementById("workout").classList.contains("active")) autosaveDraft();
+  });
+  document.addEventListener("visibilitychange", function(){
+    if(document.hidden && document.getElementById("workout").classList.contains("active")) autosaveDraft();
+  });
+  window.addEventListener("pagehide", autosaveDraft);
+  window.addEventListener("beforeunload", autosaveDraft);
+}
+
 function save(){localStorage.setItem("atlasPF",JSON.stringify(state))}
 function total(arr,smith){arr=(arr||[]).map(Number).filter(n=>!isNaN(n));return smith?arr.reduce((a,b)=>a+b,0)*2+Number(state.settings.bar||25):(arr.length==1?arr[0]:arr.reduce((a,b)=>a+b,0))}
 function ptxt(a){return a&&a.length?a.join(" + "):"manual/bodyweight"}
@@ -119,6 +169,7 @@ function show(id,btn){document.querySelectorAll(".screen").forEach(s=>s.classLis
 function todayKey(){return new Date().toISOString().slice(0,10)}
 
 function ensureV1(){
+  if(!state.coaching) state.coaching={};
   if(!state.bodyweights) state.bodyweights=[];
   if(!state.photoNotes) state.photoNotes=[];
   if(!state.nutrition) state.nutrition={targets:{protein:220,fat:80,carbs:180,calories:2380},meals:[]};
@@ -198,21 +249,105 @@ function saveMeal(){
   save();renderNutrition();alert("Meal saved.");
 }
 
-function render(){badge.textContent=`Day ${state.currentDay+1} / 8`;done.textContent=state.logs.length;prs.textContent=[...new Set(state.split.flatMap(d=>d.exercises.map(e=>e.name)))].filter(n=>logsFor(n).length).length;trend.textContent=trendCalc()+"%";let lc=state.logs.at(-1)?.cardio;lastCardio.textContent=lc&&lc.type!="None"?`${lc.type} ${lc.time||0}m`:"—";let d=state.split[state.currentDay];next.innerHTML=`<div class="metric" style="font-size:22px">${d.name}</div><div class="label">${d.rest?"Recovery day":"Smith lifts use plates per side + 25 lb resistance"}</div>`;days.innerHTML=state.split.map((d,i)=>`<div class="day" onclick="openDay(${i})"><div><b>Day ${i+1}: ${d.name}</b><span>${d.rest?"Rest":d.exercises.length+" exercises"} • ${i==state.currentDay?"Current":"Tap to open"}</span></div><button class="btn secondary">${d.rest?"View":"Start"}</button></div>`).join("");bar.value=state.settings.bar;jump.value=state.settings.jump;renderProgress();renderHistory();renderNutrition();renderAchievements();renderExercisePicker()}
-function openDay(i){activeDay=i;let d=state.split[i];wtitle.textContent=`Day ${i+1}: ${d.name}`;wsub.textContent=d.rest?"Rest, recovery, mobility, or light cardio.":"Enter reps. Smith lifts calculate total from plates per side.";entries=d.exercises.map(t=>({...t,plates:[...(t.plates||[])],reps:Array(t.sets).fill(""),notes:""}));ctype.value="Stairmaster";ctime.value="";cdist.value="";clevel.value="";notes.value="";renderWorkout();show("workout")}
-function renderWorkout(){let d=state.split[activeDay];if(d.rest){exlist.innerHTML='<div class="rec">Rest day. You can save cardio and notes only.</div>';return}exlist.innerHTML=entries.map((e,i)=>{let r=rec(e,e);return`<div class="exercise"><div class="exhead"><div><input class="title" value="${e.name}" onchange="entries[${i}].name=this.value"><div><span class="pill">${e.sets}×${e.min}-${e.max}</span><span class="pill">${e.smith?"Smith + "+state.settings.bar+" lb":"Manual"}</span><span class="pill">Total: ${total(e.plates,e.smith)||"—"} lb</span></div></div><button class="btn secondary" onclick="toggleSmith(${i})">${e.smith?"Smith":"Manual"}</button></div><div class="row3"><input type="number" value="${e.sets}" onchange="entries[${i}].sets=Number(this.value);entries[${i}].reps=Array(Number(this.value)).fill('');renderWorkout()"><input type="number" value="${e.min}" onchange="entries[${i}].min=Number(this.value)"><input type="number" value="${e.max}" onchange="entries[${i}].max=Number(this.value)"></div><div class="mini">${e.smith?"Tap plates for ONE SIDE. App doubles it and adds Smith resistance.":"Enter total machine/dumbbell/cable weight."}</div><div class="${e.smith?"plates":"hidden"}">${plates.map(p=>`<button class="plate" onclick="entries[${i}].plates.push(${p});renderWorkout()">+${p}</button>`).join("")}</div><div class="row"><input value="${ptxt(e.plates)}" onchange="entries[${i}].plates=this.value.split(/[, +]+/).map(Number).filter(n=>!isNaN(n));renderWorkout()"><button class="btn secondary" onclick="entries[${i}].plates=[];renderWorkout()">Clear</button></div>${Array.from({length:e.sets}).map((_,s)=>`<div class="set"><b>Set ${s+1}</b><input value="${total(e.plates,e.smith)||""}" readonly><input type="number" value="${e.reps[s]||""}" onchange="entries[${i}].reps[${s}]=this.value;renderWorkout()" placeholder="Reps"></div>`).join("")}<textarea placeholder="Notes" onchange="entries[${i}].notes=this.value">${e.notes||""}</textarea><div class="rec ${r[0]}">${r[1]}</div></div>`}).join("")}
-function toggleSmith(i){entries[i].smith=!entries[i].smith;renderWorkout()}
-function addExercise(){entries.push(ex("New Exercise",3,8,12,[],false,"accessory"));entries.at(-1).reps=["","",""];renderWorkout()}
-function saveWorkout(){let d=state.split[activeDay];let out=entries.map(e=>{let w=total(e.plates,e.smith),br=Math.max(...(e.reps||[]).map(x=>Number(x||0)),0);return{...e,total:w,e1rm:e1rm(w,br),volume:vol(w,e.reps||[])}});state.logs.push({date:new Date().toISOString(),dayIndex:activeDay,dayName:d.name,entries:out,cardio:{type:ctype.value,time:ctime.value,distance:cdist.value,level:clevel.value},notes:notes.value});state.currentDay=(activeDay+1)%state.split.length;save();render();show("home");alert("Workout saved")}
+function render(){badge.textContent=`Day ${state.currentDay+1} / 8`;done.textContent=state.logs.length;prs.textContent=[...new Set(state.split.flatMap(d=>d.exercises.map(e=>e.name)))].filter(n=>logsFor(n).length).length;trend.textContent=trendCalc()+"%";let lc=state.logs.at(-1)?.cardio;lastCardio.textContent=lc&&lc.type!="None"?`${lc.type} ${lc.time||0}m`:"—";if(document.getElementById("draftCard")){draftCard.innerHTML=state.draft?`<div class="card wide" style="margin:12px 0"><h3>Unfinished Workout Saved</h3><div class="mini">Last autosave: ${new Date(state.draft.savedAt).toLocaleString()} • Day ${state.draft.activeDay+1}: ${state.split[state.draft.activeDay].name}</div><div class="actions"><button class="btn" onclick="restoreDraft()">Resume Workout</button><button class="btn danger" onclick="clearDraft();render()">Discard Draft</button></div></div>`:""}if(document.getElementById("coachSummary")) coachSummary.textContent=weeklySummary();let d=state.split[state.currentDay];next.innerHTML=`<div class="metric" style="font-size:22px">${d.name}</div><div class="label">${d.rest?"Recovery day":"Smith lifts use plates per side + 25 lb resistance"}</div>`;days.innerHTML=state.split.map((d,i)=>`<div class="day" onclick="openDay(${i})"><div><b>Day ${i+1}: ${d.name}</b><span>${d.rest?"Rest":d.exercises.length+" exercises"} • ${i==state.currentDay?"Current":"Tap to open"}</span></div><button class="btn secondary">${d.rest?"View":"Start"}</button></div>`).join("");bar.value=state.settings.bar;jump.value=state.settings.jump;renderProgress();renderHistory();renderNutrition();renderAchievements();renderExercisePicker()}
+function openDay(i){activeDay=i;let d=state.split[i];wtitle.textContent=`Day ${i+1}: ${d.name}`;wsub.textContent=d.rest?"Rest, recovery, mobility, or light cardio.":"Enter reps. Smith lifts calculate total from plates per side.";entries=d.exercises.map(t=>({...t,plates:[...(t.plates||[])],reps:Array(t.sets).fill(""),notes:""}));ctype.value="Stairmaster";ctime.value="";cdist.value="";clevel.value="";notes.value="";renderWorkout();show("workout");autosaveDraft()}
+function renderWorkout(){let d=state.split[activeDay];if(d.rest){exlist.innerHTML='<div class="rec">Rest day. You can save cardio and notes only.</div>';return}exlist.innerHTML=entries.map((e,i)=>{let r=rec(e,e);return`<div class="exercise"><div class="exhead"><div><input class="title" value="${e.name}" onchange="entries[${i}].name=this.value;autosaveDraft()"><div><span class="pill">${e.sets}×${e.min}-${e.max}</span><span class="pill">${e.smith?"Smith + "+state.settings.bar+" lb":"Manual"}</span><span class="pill">Total: ${total(e.plates,e.smith)||"—"} lb</span></div></div><button class="btn secondary" onclick="toggleSmith(${i})">${e.smith?"Smith":"Manual"}</button></div><div class="row3"><input type="number" value="${e.sets}" onchange="entries[${i}].sets=Number(this.value);entries[${i}].reps=Array(Number(this.value)).fill('');autosaveDraft();renderWorkout()"><input type="number" value="${e.min}" onchange="entries[${i}].min=Number(this.value);autosaveDraft()"><input type="number" value="${e.max}" onchange="entries[${i}].max=Number(this.value);autosaveDraft()"></div><div class="mini">${e.smith?"Tap plates for ONE SIDE. App doubles it and adds Smith resistance.":"Enter total machine/dumbbell/cable weight."}</div><div class="${e.smith?"plates":"hidden"}">${plates.map(p=>`<button class="plate" onclick="entries[${i}].plates.push(${p});autosaveDraft();renderWorkout()">+${p}</button>`).join("")}</div><div class="row"><input value="${ptxt(e.plates)}" onchange="entries[${i}].plates=this.value.split(/[, +]+/).map(Number).filter(n=>!isNaN(n));autosaveDraft();renderWorkout()"><button class="btn secondary" onclick="entries[${i}].plates=[];autosaveDraft();renderWorkout()">Clear</button></div>${Array.from({length:e.sets}).map((_,s)=>`<div class="set"><b>Set ${s+1}</b><input value="${total(e.plates,e.smith)||""}" readonly><input type="number" value="${e.reps[s]||""}" onchange="entries[${i}].reps[${s}]=this.value;autosaveDraft();renderWorkout()" placeholder="Reps"></div>`).join("")}<textarea placeholder="Notes" onchange="entries[${i}].notes=this.value;autosaveDraft()">${e.notes||""}</textarea><div class="rec ${r[0]}">${r[1]}</div>${targetBadgeFor(e.name)}</div>`}).join("")}
+function toggleSmith(i){entries[i].smith=!entries[i].smith;autosaveDraft();renderWorkout()}
+function addExercise(){entries.push(ex("New Exercise",3,8,12,[],false,"accessory"));entries.at(-1).reps=["","",""];autosaveDraft();renderWorkout()}
+
+function getTemplateByName(name){
+  return state.split.flatMap(d=>d.exercises).find(e=>e.name===name);
+}
+function clonePlateArray(a){return (a||[]).map(Number).filter(n=>!isNaN(n))}
+function reducePlatesApprox(plates, reduceEachSide){
+  let current=clonePlateArray(plates).sort((a,b)=>b-a);
+  let target=Math.max(0,current.reduce((a,b)=>a+b,0)-reduceEachSide);
+  let opts=[45,35,25,10,5,2.5];
+  let out=[];
+  for(let p of opts){
+    while(target>=p-0.01){out.push(p);target-=p}
+  }
+  return out;
+}
+function applyCoachingAfterSave(savedEntries){
+  if(!state.coaching) state.coaching={};
+  savedEntries.forEach(e=>{
+    let t=getTemplateByName(e.name);
+    if(!t) return;
+    let top=Number(e.max||t.max||10);
+    let min=Number(e.min||t.min||8);
+    let reps=(e.reps||[]).map(x=>Number(x||0));
+    let hitTop=reps.length>=Number(e.sets||t.sets) && reps.slice(0,Number(e.sets||t.sets)).every(r=>r>=top);
+    let failed=reps.length>=Number(e.sets||t.sets) && reps.slice(0,Number(e.sets||t.sets)).filter(r=>r<min).length>=2;
+    let past=logsFor(e.name).slice(-2);
+    let repeatedFail=failed && past.length>=2 && past.every(p=>{
+      let pr=(p.reps||[]).map(x=>Number(x||0));
+      return pr.slice(0,Number(p.sets||e.sets||t.sets)).filter(r=>r<min).length>=2;
+    });
+    let currentPlates=clonePlateArray(e.plates||t.plates);
+    let currentTotal=Number(e.total||total(currentPlates,e.smith||t.smith));
+    let addPerSide=(e.type||t.type)==="compound"?Number(state.settings.jump||5):(currentTotal<50?2.5:5);
+    let next={name:e.name,updatedAt:new Date().toISOString(),reason:"Stay at current weight",plates:currentPlates,total:currentTotal,smith:!!(e.smith||t.smith),status:"stay"};
+    if(hitTop){
+      if(next.smith){
+        next.plates=[...currentPlates,addPerSide];
+        next.total=total(next.plates,true);
+        next.reason=`You hit the top reps on every set. Next time add ${addPerSide} lb per side.`;
+      }else{
+        next.total=Math.round(currentTotal+addPerSide);
+        next.plates=[next.total];
+        next.reason=`You hit the top reps on every set. Next time move up to ${next.total} lb.`;
+      }
+      next.status="increase";
+    }else if(repeatedFail){
+      if(next.smith){
+        next.plates=reducePlatesApprox(currentPlates, Math.max(addPerSide, currentPlates.reduce((a,b)=>a+b,0)*0.10));
+        next.total=total(next.plates,true);
+        next.reason=`You missed the minimum rep range repeatedly. Deload next time and rebuild clean reps.`;
+      }else{
+        next.total=Math.max(0,Math.round(currentTotal*0.90));
+        next.plates=[next.total];
+        next.reason=`You missed the minimum rep range repeatedly. Deload around 10% next time.`;
+      }
+      next.status="deload";
+    }
+    state.coaching[e.name]=next;
+
+    // Actually update the preloaded workout template so the next workout opens with the coached target.
+    let template=getTemplateByName(e.name);
+    if(template){
+      template.plates=clonePlateArray(next.plates);
+      template.smith=next.smith;
+    }
+  });
+}
+function targetBadgeFor(name){
+  let c=state.coaching&&state.coaching[name];
+  if(!c) return "";
+  let cls=c.status==="increase"?"good":(c.status==="deload"?"bad":"");
+  return `<div class="rec ${cls}"><b>Next target:</b> ${c.smith?ptxt(c.plates)+" per side = ":""}${c.total} lb<br>${c.reason}</div>`;
+}
+function weeklySummary(){
+  let recent=state.logs.slice(-6);
+  if(!recent.length) return "No weekly summary yet.";
+  let workoutCount=recent.length;
+  let totalVol=recent.reduce((a,l)=>a+l.entries.reduce((x,e)=>x+(e.volume||0),0),0);
+  let cardio=recent.filter(l=>l.cardio&&l.cardio.type&&l.cardio.type!=="None").length;
+  let increases=Object.values(state.coaching||{}).filter(c=>c.status==="increase").length;
+  let deloads=Object.values(state.coaching||{}).filter(c=>c.status==="deload").length;
+  return `${workoutCount} recent workouts • ${Math.round(totalVol).toLocaleString()} lb volume • ${cardio} cardio finishers • ${increases} exercises ready to increase • ${deloads} deload flags`;
+}
+
+function saveWorkout(){let d=state.split[activeDay];let out=entries.map(e=>{let w=total(e.plates,e.smith),br=Math.max(...(e.reps||[]).map(x=>Number(x||0)),0);return{...e,total:w,e1rm:e1rm(w,br),volume:vol(w,e.reps||[])}});state.logs.push({date:new Date().toISOString(),dayIndex:activeDay,dayName:d.name,entries:out,cardio:{type:ctype.value,time:ctime.value,distance:cdist.value,level:clevel.value},notes:notes.value});applyCoachingAfterSave(out);state.currentDay=(activeDay+1)%state.split.length;clearDraft();save();render();show("home");alert("Workout saved")}
 function best(n){let a=logsFor(n);if(!a.length)return null;return a.sort((x,y)=>(y.e1rm||0)-(x.e1rm||0)||(y.volume||0)-(x.volume||0))[0]}
-function renderProgress(){let names=[...new Set(state.split.flatMap(d=>d.exercises.map(e=>e.name)))];plist.innerHTML=names.map(n=>{let b=best(n),t=state.split.flatMap(d=>d.exercises).find(e=>e.name==n),last=logsFor(n).at(-1),r=t?rec(t,last||t):["",""];return`<div class="item"><b>${n}</b><div class="mini">${b?`Best: ${b.total} lb • Est. 1RM: ${b.e1rm} lb • Volume: ${b.volume} lb`:"No logs yet"}</div><div class="rec ${r[0]}">${r[1]}</div></div>`}).join("")}
+function renderProgress(){let names=[...new Set(state.split.flatMap(d=>d.exercises.map(e=>e.name)))];plist.innerHTML=names.map(n=>{let b=best(n),t=state.split.flatMap(d=>d.exercises).find(e=>e.name==n),last=logsFor(n).at(-1),r=t?rec(t,last||t):["",""];return`<div class="item"><b>${n}</b><div class="mini">${b?`Best: ${b.total} lb • Est. 1RM: ${b.e1rm} lb • Volume: ${b.volume} lb`:"No logs yet"}</div><div class="rec ${r[0]}">${r[1]}</div>${targetBadgeFor(e.name)}</div>`}).join("")}
 function renderHistory(){hlist.innerHTML=state.logs.length?state.logs.slice().reverse().map(l=>`<div class="item"><b>${new Date(l.date).toLocaleDateString()} — ${l.dayName}</b><div class="mini">${l.entries.map(e=>`${e.name}: ${e.total||"—"} lb × ${(e.reps||[]).filter(Boolean).join("/")}`).join("<br>")}</div><div class="mini">Cardio: ${l.cardio.type} ${l.cardio.time?l.cardio.time+" min":""}</div></div>`).join(""):"No workouts yet."}
 function trendCalc(){if(state.logs.length<2)return 0;let r=state.logs.slice(-3).reduce((a,l)=>a+l.entries.reduce((x,e)=>x+(e.volume||0),0),0),p=state.logs.slice(-6,-3).reduce((a,l)=>a+l.entries.reduce((x,e)=>x+(e.volume||0),0),0);return p?Math.round((r-p)/p*100):(r?100:0)}
 function nextDay(){state.currentDay=(state.currentDay+1)%state.split.length;save();render()}
 function saveSettings(){state.settings.bar=Number(bar.value||25);state.settings.jump=Number(jump.value||5);save();render();alert("Settings saved")}
 function exportData(){exportBox.value=JSON.stringify(state,null,2)}
 function resetData(){if(confirm("Reset everything?")){localStorage.removeItem("atlasPF");location.reload()}}
-ensureV1(); save(); render()
+ensureV1(); save(); wireAutosave(); render()
 </script>
 </body>
 </html>
