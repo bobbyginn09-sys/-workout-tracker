@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Workout Tracker</title>
+  <meta name="theme-color" content="#111827" />
+  <style>
+    :root{
+      --bg:#0b1220;--card:#111827;--card2:#1f2937;--text:#f9fafb;--muted:#9ca3af;--line:#374151;--accent:#22c55e;--danger:#ef4444;--warn:#f59e0b;--blue:#3b82f6;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:var(--text);padding-bottom:90px}
+    header{position:sticky;top:0;z-index:10;background:linear-gradient(180deg,#111827,#0b1220);border-bottom:1px solid var(--line);padding:16px}
+    h1{margin:0;font-size:24px}.sub{color:var(--muted);font-size:13px;margin-top:4px}
+    main{padding:14px;max-width:900px;margin:auto}.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px;margin-bottom:14px;box-shadow:0 8px 20px rgba(0,0,0,.2)}
+    .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.between{justify-content:space-between}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:10px}
+    button,input,select,textarea{font:inherit;border-radius:10px;border:1px solid var(--line);background:#0f172a;color:var(--text);padding:10px}button{cursor:pointer;background:var(--card2);font-weight:700}button.primary{background:var(--accent);color:#06240f;border:0}button.blue{background:var(--blue);color:white;border:0}button.danger{background:var(--danger);color:white;border:0}button.ghost{background:transparent}.small{font-size:12px;padding:7px 9px}.muted{color:var(--muted)}
+    input,select,textarea{width:100%}label{display:block;font-size:12px;color:var(--muted);margin:8px 0 4px}.tabs{position:fixed;bottom:0;left:0;right:0;background:#111827;border-top:1px solid var(--line);display:grid;grid-template-columns:repeat(5,1fr);z-index:20}.tabs button{border:0;border-radius:0;background:#111827;padding:12px 4px;color:var(--muted);font-size:12px}.tabs button.active{color:var(--accent);background:#0f172a}.dayBtn{text-align:left;width:100%;padding:12px}.exercise{background:#0f172a;border:1px solid var(--line);border-radius:14px;padding:12px;margin-top:12px}.setrow{display:grid;grid-template-columns:42px 1fr 1fr 40px;gap:8px;align-items:end;margin-top:8px}.pill{display:inline-block;border:1px solid var(--line);border-radius:999px;padding:5px 9px;font-size:12px;color:var(--muted);margin:2px}.good{color:var(--accent)}.bad{color:var(--danger)}.warn{color:var(--warn)}table{width:100%;border-collapse:collapse;font-size:13px}td,th{border-bottom:1px solid var(--line);padding:8px;text-align:left}th{color:var(--muted)}.hidden{display:none!important}.title{font-size:18px;font-weight:800}.note{font-size:12px;color:var(--muted);line-height:1.4}.stat{background:#0f172a;border:1px solid var(--line);border-radius:14px;padding:12px}.stat strong{font-size:20px;display:block}.modal{position:fixed;inset:0;background:rgba(0,0,0,.65);display:flex;align-items:flex-end;z-index:50}.modalBox{background:var(--card);width:100%;max-width:900px;margin:auto;border-radius:18px 18px 0 0;padding:16px;border:1px solid var(--line);max-height:88vh;overflow:auto}@media(min-width:700px){.modal{align-items:center}.modalBox{border-radius:18px}.setrow{grid-template-columns:60px 1fr 1fr 40px}}
+  </style>
+</head>
+<body>
+<header><h1>Workout Tracker</h1><div class="sub" id="todayLine"></div></header>
+<main>
+  <section id="dashboard"></section>
+  <section id="workout" class="hidden"></section>
+  <section id="history" class="hidden"></section>
+  <section id="prs" class="hidden"></section>
+  <section id="settings" class="hidden"></section>
+</main>
+<nav class="tabs">
+  <button onclick="showTab('dashboard')" class="active">Home</button><button onclick="showTab('workout')">Workout</button><button onclick="showTab('history')">History</button><button onclick="showTab('prs')">PRs</button><button onclick="showTab('settings')">Edit</button>
+</nav>
+<div id="modal" class="hidden"></div>
+<script>
+const KEY='bobbyWorkoutTracker_v1';
+const defaultProgram=[
+ {name:'Day 1: Quad-Dominant Leg Day',rest:false,exercises:[['Squats',4,'8-10','45,25'],['Leg Press',4,'8-10','260'],['Bulgarian Split Squats',3,'10-12',''],['Leg Extensions',4,'12-15','30'],['Calf Raises',4,'15-20','100']]},
+ {name:'Day 2: Chest with Triceps',rest:false,exercises:[['Bench Press',4,'8-10','45,10'],['Incline Dumbbell Press',4,'10-12','25'],['Cable Chest Flyers',3,'12-15','80'],['Triceps Press',3,'10-12','100'],['Tricep Push Downs',4,'12-15','50']]},
+ {name:'Day 3: Back with Biceps',rest:false,exercises:[['Deadlifts',4,'6-8','45,45,25'],['Barbell Rows',4,'8-10','45'],['Lat Pull Downs',4,'10-12','85'],['Seated Cable Rows',3,'10-12','105'],['Biceps Curls',3,'12-15','40']]},
+ {name:'Day 4: Rest',rest:true,exercises:[]},
+ {name:'Day 5: Shoulders with Chest',rest:false,exercises:[['Overhead Press',4,'8-10','80'],['Lateral Raises',4,'12-15','15s'],['Rear Delt Flyers',4,'12-15','90'],['Seated Chest Press',3,'10-12','130'],['Cable Lateral Raises',3,'12-15','5']]},
+ {name:'Day 6: Hamstrings with Back',rest:false,exercises:[['Romanian Deadlift',4,'8-10','45,25,10'],['Hamstring Curls',4,'12-15','80'],['Lunges',3,'10-12 per leg','20 lb KB'],['Lat Pulldown Machine',3,'8-10','100'],['T-Bar Rows',3,'10-12','100']]},
+ {name:'Day 7: Arms - Biceps & Triceps',rest:false,exercises:[['Barbell Curls',4,'8-10','60'],['Incline Dumbbell Curl',3,'8-12','20'],['Hammer Curl',3,'8-12','20'],['Skull Crushers',4,'10-12','60'],['Tricep Overhead Extension',3,'12-15','25,25,25'],['Preacher Curls',3,'12-15','60'],['Cable Push Downs',3,'12-15','45']]},
+ {name:'Day 8: Rest',rest:true,exercises:[]}
+].map(d=>({...d,exercises:d.exercises.map(e=>({name:e[0],sets:e[1],repRange:e[2],defaultWeight:e[3]}))}));
+let state=JSON.parse(localStorage.getItem(KEY)||'null')||{program:defaultProgram,logs:[],cycleDay:0,bodyweights:[]};
+let activeDay=state.cycleDay||0; let draft=null;
+function save(){localStorage.setItem(KEY,JSON.stringify(state));renderAll()}
+function fmt(d){return new Date(d).toLocaleDateString()}
+function today(){return new Date().toISOString().slice(0,10)}
+function showTab(id){document.querySelectorAll('main>section').forEach(s=>s.classList.add('hidden'));document.getElementById(id).classList.remove('hidden');document.querySelectorAll('.tabs button').forEach(b=>b.classList.remove('active'));[...document.querySelectorAll('.tabs button')].find(b=>b.textContent.toLowerCase().includes(id==='dashboard'?'home':id))?.classList.add('active');renderAll()}
+function lastLogForExercise(name){return [...state.logs].reverse().flatMap(l=>l.exercises.map(e=>({...e,date:l.date}))).find(e=>e.name===name)}
+function bestSet(ex){let best={weight:0,reps:0,vol:0};ex.sets?.forEach(s=>{let w=Number(s.weight)||0,r=Number(s.reps)||0;if(w*r>best.vol)best={weight:w,reps:r,vol:w*r}});return best}
+function exercisePR(name){let best={weight:0,reps:0,date:'',vol:0};state.logs.forEach(l=>l.exercises.forEach(e=>{if(e.name===name){let b=bestSet(e); if(b.weight>best.weight || b.vol>best.vol) best={...b,date:l.date}}}));return best}
+function renderDashboard(){let next=state.program[state.cycleDay]||state.program[0];let total=state.logs.length;let last=state.logs[state.logs.length-1];let prs=countPRs();document.getElementById('todayLine').textContent=new Date().toLocaleString([], {weekday:'long',month:'short',day:'numeric',year:'numeric'});
+ dashboard.innerHTML=`<div class="card"><div class="row between"><div><div class="muted">Current Day</div><div class="title">${next.name}</div></div><button class="primary" onclick="startDay(${state.cycleDay})">Start</button></div><div class="note">After you save a workout, the app moves you to the next day in your 8-day split.</div></div>
+ <div class="grid"><div class="stat"><span class="muted">Completed</span><strong>${total}</strong></div><div class="stat"><span class="muted">PRs</span><strong>${prs}</strong></div><div class="stat"><span class="muted">Last Workout</span><strong>${last?fmt(last.date):'None'}</strong></div></div>
+ <div class="card"><div class="title">Pick Workout</div>${state.program.map((d,i)=>`<button class="dayBtn" onclick="startDay(${i})"><b>${d.name}</b><br><span class="muted">${d.rest?'Rest day':d.exercises.length+' exercises + cardio'}</span></button>`).join('')}</div>`}
+function countPRs(){let names=[...new Set(state.program.flatMap(d=>d.exercises.map(e=>e.name)))];return names.filter(n=>exercisePR(n).weight>0).length}
+function startDay(i){activeDay=i;let d=state.program[i];draft={date:today(),dayIndex:i,dayName:d.name,exercises:d.exercises.map(ex=>({name:ex.name,repRange:ex.repRange,sets:Array.from({length:ex.sets},(_,k)=>({weight:ex.defaultWeight,reps:''}))})),cardio:{type:'Stairmaster',minutes:'',distance:'',level:'',calories:''},notes:''};showTab('workout')}
+function renderWorkout(){let d=state.program[activeDay]; if(!draft) startDay(activeDay); if(draft.dayIndex!==activeDay) startDay(activeDay);
+ workout.innerHTML=`<div class="card"><div class="row between"><div><div class="muted">Logging</div><div class="title">${draft.dayName}</div></div><select onchange="activeDay=Number(this.value);startDay(activeDay)">${state.program.map((x,i)=>`<option value="${i}" ${i===activeDay?'selected':''}>${x.name}</option>`).join('')}</select></div>${d.rest?`<p>Rest day. You can still save notes or cardio.</p>`:''}</div>
+ ${draft.exercises.map((ex,ei)=>exerciseHTML(ex,ei)).join('')}
+ <div class="card"><div class="title">Cardio Finish</div><div class="grid"><div><label>Type</label><select onchange="draft.cardio.type=this.value"><option ${draft.cardio.type==='Stairmaster'?'selected':''}>Stairmaster</option><option ${draft.cardio.type==='Run'?'selected':''}>Run</option><option ${draft.cardio.type==='Walk'?'selected':''}>Walk</option><option ${draft.cardio.type==='Bike'?'selected':''}>Bike</option></select></div><div><label>Minutes</label><input type="number" value="${draft.cardio.minutes}" oninput="draft.cardio.minutes=this.value"></div><div><label>Distance</label><input value="${draft.cardio.distance}" oninput="draft.cardio.distance=this.value" placeholder="miles or steps"></div><div><label>Level</label><input value="${draft.cardio.level}" oninput="draft.cardio.level=this.value"></div><div><label>Calories</label><input type="number" value="${draft.cardio.calories}" oninput="draft.cardio.calories=this.value"></div></div></div>
+ <div class="card"><label>Notes</label><textarea rows="3" oninput="draft.notes=this.value">${draft.notes||''}</textarea><div class="row"><button class="blue" onclick="addExerciseToDraft()">+ Add Exercise</button><button class="primary" onclick="saveWorkout()">Save Workout</button></div></div>`}
+function exerciseHTML(ex,ei){let last=lastLogForExercise(ex.name);let pr=exercisePR(ex.name);let suggest=suggestWeight(ex.name);return `<div class="exercise"><div class="row between"><div><div class="title">${ex.name}</div><span class="pill">Target ${ex.repRange}</span>${last?`<span class="pill">Last: ${bestSet(last).weight} x ${bestSet(last).reps}</span>`:''}${pr.weight?`<span class="pill good">PR: ${pr.weight} x ${pr.reps}</span>`:''}${suggest?`<span class="pill warn">Suggested: ${suggest}</span>`:''}</div><button class="small danger" onclick="draft.exercises.splice(${ei},1);renderWorkout()">Remove</button></div>${ex.sets.map((s,si)=>`<div class="setrow"><b>Set ${si+1}</b><div><label>Weight</label><input value="${s.weight}" oninput="draft.exercises[${ei}].sets[${si}].weight=this.value"></div><div><label>Reps</label><input type="number" value="${s.reps}" oninput="draft.exercises[${ei}].sets[${si}].reps=this.value"></div><button class="small" onclick="draft.exercises[${ei}].sets.splice(${si},1);renderWorkout()">×</button></div>`).join('')}<button class="small" onclick="draft.exercises[${ei}].sets.push({weight:'',reps:''});renderWorkout()">+ Set</button></div>`}
+function suggestWeight(name){let last=lastLogForExercise(name); if(!last)return ''; let nums=last.sets.map(s=>Number(s.reps)||0); if(!nums.length)return ''; let min=Math.min(...nums), maxW=Math.max(...last.sets.map(s=>Number(s.weight)||0)); return min>=10? maxW+5+' lbs': maxW+' lbs'}
+function addExerciseToDraft(){let name=prompt('Exercise name?'); if(!name)return; draft.exercises.push({name,repRange:'8-12',sets:[{weight:'',reps:''},{weight:'',reps:''},{weight:'',reps:''}]});renderWorkout()}
+function saveWorkout(){state.logs.push(JSON.parse(JSON.stringify(draft))); state.cycleDay=(draft.dayIndex+1)%state.program.length; draft=null; save(); showTab('dashboard')}
+function renderHistory(){history.innerHTML=`<div class="card"><div class="title">Workout History</div>${state.logs.length?`<table><tr><th>Date</th><th>Day</th><th>Cardio</th><th></th></tr>${[...state.logs].reverse().map((l,idx)=>`<tr><td>${fmt(l.date)}</td><td>${l.dayName}</td><td>${l.cardio?.type||''} ${l.cardio?.minutes?l.cardio.minutes+' min':''}</td><td><button class="small" onclick="viewLog(${state.logs.length-1-idx})">View</button></td></tr>`).join('')}</table>`:'No workouts saved yet.'}</div>`}
+function viewLog(i){let l=state.logs[i];modal.innerHTML=`<div class="modal"><div class="modalBox"><div class="row between"><div class="title">${l.dayName}</div><button onclick="closeModal()">Close</button></div><p class="muted">${fmt(l.date)}</p>${l.exercises.map(e=>`<div class="exercise"><b>${e.name}</b><br>${e.sets.map((s,k)=>`<span class="pill">Set ${k+1}: ${s.weight||0} x ${s.reps||0}</span>`).join('')}</div>`).join('')}<div class="card"><b>Cardio:</b> ${l.cardio?.type||''} ${l.cardio?.minutes||''} min ${l.cardio?.distance||''}</div><p>${l.notes||''}</p><button class="danger" onclick="deleteLog(${i})">Delete</button></div></div>`;modal.classList.remove('hidden')}
+function closeModal(){modal.classList.add('hidden')}
+function deleteLog(i){if(confirm('Delete this workout?')){state.logs.splice(i,1);closeModal();save()}}
+function renderPRs(){let names=[...new Set(state.program.flatMap(d=>d.exercises.map(e=>e.name)))];prs.innerHTML=`<div class="card"><div class="title">Personal Records</div><table><tr><th>Exercise</th><th>Best</th><th>Date</th><th>Trend</th></tr>${names.map(n=>{let p=exercisePR(n),t=trend(n);return `<tr><td>${n}</td><td>${p.weight?p.weight+' x '+p.reps:'-'}</td><td>${p.date?fmt(p.date):'-'}</td><td class="${t.includes('Up')?'good':t.includes('Down')?'bad':'muted'}">${t}</td></tr>`}).join('')}</table></div>`}
+function trend(name){let entries=[];state.logs.forEach(l=>l.exercises.forEach(e=>{if(e.name===name)entries.push(bestSet(e).vol)}));if(entries.length<2)return 'Need 2 logs';let a=entries[entries.length-2],b=entries[entries.length-1]; if(b>a)return 'Up'; if(b<a)return 'Down'; return 'Same'}
+function renderSettings(){settings.innerHTML=`<div class="card"><div class="title">Edit Program</div><p class="note">Change exercise names, set counts, rep ranges, or starting weights. This updates future workouts only.</p>${state.program.map((d,di)=>`<div class="exercise"><label>Day Name</label><input value="${d.name}" onchange="state.program[${di}].name=this.value;save()"><div class="row"><label><input type="checkbox" ${d.rest?'checked':''} onchange="state.program[${di}].rest=this.checked;save()"> Rest Day</label><button class="small blue" onclick="addProgramExercise(${di})">+ Exercise</button></div>${d.exercises.map((e,ei)=>`<div class="card"><label>Exercise</label><input value="${e.name}" onchange="state.program[${di}].exercises[${ei}].name=this.value;save()"><div class="grid"><div><label>Sets</label><input type="number" value="${e.sets}" onchange="state.program[${di}].exercises[${ei}].sets=Number(this.value);save()"></div><div><label>Rep Range</label><input value="${e.repRange}" onchange="state.program[${di}].exercises[${ei}].repRange=this.value;save()"></div><div><label>Default Weight</label><input value="${e.defaultWeight}" onchange="state.program[${di}].exercises[${ei}].defaultWeight=this.value;save()"></div></div><button class="small danger" onclick="state.program[${di}].exercises.splice(${ei},1);save()">Remove</button></div>`).join('')}</div>`).join('')}</div><div class="card"><button class="danger" onclick="resetAll()">Reset Everything</button><button onclick="exportData()">Export Backup</button><label>Import Backup</label><textarea id="importBox" rows="3"></textarea><button onclick="importData()">Import</button></div>`}
+function addProgramExercise(di){state.program[di].exercises.push({name:'New Exercise',sets:3,repRange:'8-12',defaultWeight:''});save()}
+function resetAll(){if(confirm('This deletes all saved workouts and resets the app.')){state={program:defaultProgram,logs:[],cycleDay:0,bodyweights:[]};save()}}
+function exportData(){navigator.clipboard.writeText(JSON.stringify(state));alert('Backup copied to clipboard')}
+function importData(){try{state=JSON.parse(document.getElementById('importBox').value);save();alert('Imported')}catch(e){alert('Import failed')}}
+function renderAll(){renderDashboard(); if(document.getElementById('workout')&&!workout.classList.contains('hidden'))renderWorkout(); renderHistory(); renderPRs(); renderSettings()}
+renderAll();
+</script>
+</body>
+</html>
