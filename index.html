@@ -1,92 +1,218 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Workout Tracker</title>
-  <meta name="theme-color" content="#070a13" />
-  <link rel="manifest" href='data:application/manifest+json,{"name":"Bobby Workout Tracker","short_name":"Workout","start_url":".","display":"standalone","background_color":"#070a13","theme_color":"#7c3aed","icons":[]}'>
-  <style>
-    :root{
-      --bg:#070a13;--card:rgba(17,24,39,.82);--card2:rgba(31,41,55,.88);--text:#f8fafc;--muted:#a5b4fc;--soft:#94a3b8;--line:rgba(148,163,184,.22);--accent:#a78bfa;--accent2:#22d3ee;--danger:#fb7185;--warn:#fbbf24;--blue:#38bdf8;--green:#34d399;
-      --glow:0 18px 55px rgba(124,58,237,.28);--shadow:0 18px 45px rgba(0,0,0,.38);
-    }
-    *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-    body{margin:0;font-family:Inter,ui-rounded,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:radial-gradient(circle at 20% -10%,rgba(124,58,237,.45),transparent 32%),radial-gradient(circle at 95% 0%,rgba(34,211,238,.28),transparent 30%),linear-gradient(180deg,#070a13,#0f172a 48%,#09090f);color:var(--text);padding-bottom:96px;min-height:100vh}
-    body:before{content:"";position:fixed;inset:0;pointer-events:none;background-image:linear-gradient(rgba(255,255,255,.035) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px);background-size:34px 34px;mask-image:linear-gradient(to bottom,black,transparent 75%)}
-    header{position:sticky;top:0;z-index:10;background:linear-gradient(180deg,rgba(7,10,19,.96),rgba(7,10,19,.72));backdrop-filter:blur(18px);border-bottom:1px solid var(--line);padding:18px 16px 14px}
-    h1{margin:0;font-size:28px;letter-spacing:-.8px;background:linear-gradient(90deg,#fff,#c4b5fd,#67e8f9);-webkit-background-clip:text;color:transparent}.sub{color:var(--soft);font-size:13px;margin-top:4px}
-    main{padding:14px;max-width:960px;margin:auto}.card{background:linear-gradient(180deg,rgba(17,24,39,.88),rgba(15,23,42,.72));border:1px solid var(--line);border-radius:24px;padding:16px;margin-bottom:14px;box-shadow:var(--shadow);backdrop-filter:blur(18px)}
-    .card.hero{position:relative;overflow:hidden;box-shadow:var(--glow)}.card.hero:after{content:"";position:absolute;right:-60px;top:-70px;width:190px;height:190px;border-radius:50%;background:radial-gradient(circle,rgba(34,211,238,.35),transparent 65%)}
-    .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.between{justify-content:space-between}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:10px}.grid.tight{grid-template-columns:repeat(2,minmax(0,1fr))}
-    button,input,select,textarea{font:inherit;border-radius:14px;border:1px solid var(--line);background:rgba(15,23,42,.78);color:var(--text);padding:11px;outline:none}input:focus,select:focus,textarea:focus{border-color:rgba(167,139,250,.75);box-shadow:0 0 0 4px rgba(167,139,250,.12)}button{cursor:pointer;background:linear-gradient(180deg,rgba(51,65,85,.96),rgba(30,41,59,.9));font-weight:800;transition:.18s transform,.18s filter}button:active{transform:scale(.97)}button.primary{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#06111a;border:0;box-shadow:0 10px 28px rgba(34,211,238,.18)}button.blue{background:linear-gradient(135deg,#2563eb,#06b6d4);color:white;border:0}button.danger{background:linear-gradient(135deg,#e11d48,#fb7185);color:white;border:0}button.ghost{background:transparent}.small{font-size:12px;padding:8px 10px}.muted{color:var(--soft)}
-    input,select,textarea{width:100%}label{display:block;font-size:12px;color:var(--soft);margin:8px 0 4px;font-weight:700;letter-spacing:.2px}.tabs{position:fixed;bottom:0;left:0;right:0;background:rgba(7,10,19,.84);backdrop-filter:blur(22px);border-top:1px solid var(--line);display:grid;grid-template-columns:repeat(5,1fr);z-index:20;padding-bottom:env(safe-area-inset-bottom)}.tabs button{border:0;border-radius:0;background:transparent;padding:12px 4px;color:var(--soft);font-size:12px}.tabs button.active{color:white;background:linear-gradient(180deg,rgba(124,58,237,.24),rgba(34,211,238,.10));box-shadow:inset 0 3px 0 var(--accent)}
-    .dayBtn{text-align:left;width:100%;padding:14px;margin-top:8px;border-radius:18px;background:linear-gradient(135deg,rgba(30,41,59,.9),rgba(15,23,42,.72));position:relative;overflow:hidden}.dayBtn:before{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(167,139,250,.12),transparent);opacity:.9}.exercise{background:linear-gradient(180deg,rgba(15,23,42,.9),rgba(2,6,23,.58));border:1px solid var(--line);border-radius:22px;padding:14px;margin-top:12px;box-shadow:0 12px 28px rgba(0,0,0,.22)}.setrow{display:grid;grid-template-columns:48px 1fr 1fr 42px;gap:8px;align-items:end;margin-top:8px}.pill{display:inline-flex;align-items:center;border:1px solid var(--line);border-radius:999px;padding:6px 10px;font-size:12px;color:var(--soft);margin:3px;background:rgba(15,23,42,.72)}.pill.good,.good{color:var(--green)}.bad{color:var(--danger)}.warn{color:var(--warn)}table{width:100%;border-collapse:collapse;font-size:13px;overflow:hidden}td,th{border-bottom:1px solid var(--line);padding:10px 8px;text-align:left}th{color:var(--soft);font-size:12px;text-transform:uppercase;letter-spacing:.45px}.hidden{display:none!important}.title{font-size:18px;font-weight:900;letter-spacing:-.25px}.bigtitle{font-size:26px;font-weight:950;letter-spacing:-.8px}.note{font-size:12px;color:var(--soft);line-height:1.45}.stat{background:linear-gradient(180deg,rgba(15,23,42,.9),rgba(30,41,59,.62));border:1px solid var(--line);border-radius:20px;padding:14px;box-shadow:0 10px 25px rgba(0,0,0,.2)}.stat strong{font-size:24px;display:block;margin-top:3px}.modal{position:fixed;inset:0;background:rgba(0,0,0,.72);backdrop-filter:blur(10px);display:flex;align-items:flex-end;z-index:50}.modalBox{background:linear-gradient(180deg,#111827,#020617);width:100%;max-width:900px;margin:auto;border-radius:24px 24px 0 0;padding:16px;border:1px solid var(--line);max-height:88vh;overflow:auto}.badge{width:44px;height:44px;border-radius:16px;display:grid;place-items:center;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#06111a;font-weight:950;box-shadow:0 10px 25px rgba(124,58,237,.28)}
-    @media(min-width:700px){.modal{align-items:center}.modalBox{border-radius:24px}.setrow{grid-template-columns:64px 1fr 1fr 44px}.grid.tight{grid-template-columns:repeat(4,minmax(0,1fr))}}
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Atlas Strength v1.0</title>
+<meta name="theme-color" content="#080b12">
+<style>
+:root{--bg:#080b12;--card:#111a2b;--card2:#18243a;--text:#f7fbff;--muted:#9fb0c7;--line:rgba(255,255,255,.12);--blue:#0ea5e9;--purple:#8b5cf6;--green:#22c55e;--yellow:#f59e0b;--red:#ef4444}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at top,#17213a,#080b12 45%,#05070b);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;padding-bottom:88px}
+.app{max-width:780px;margin:auto;padding:16px}.header{position:sticky;top:0;z-index:10;margin:-16px -16px 16px;padding:18px 16px;background:rgba(8,11,18,.94);backdrop-filter:blur(18px);border-bottom:1px solid var(--line)}
+.top{display:flex;justify-content:space-between;gap:12px;align-items:center}h1{margin:0;font-size:25px;letter-spacing:-.5px}p{color:var(--muted)}.sub{margin:5px 0 0;color:var(--muted);font-size:13px}.badge{border:1px solid var(--line);background:rgba(255,255,255,.06);border-radius:999px;padding:9px 12px;font-size:12px;color:#d9edff}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.card{background:linear-gradient(180deg,var(--card2),var(--card));border:1px solid var(--line);border-radius:22px;padding:15px;box-shadow:0 18px 45px rgba(0,0,0,.32)}.wide{grid-column:1/-1}.metric{font-size:27px;font-weight:900}.label{font-size:12px;color:var(--muted);margin-top:4px}
+button,input,select,textarea{font:inherit}button{cursor:pointer}.btn{border:0;border-radius:15px;padding:11px 13px;background:linear-gradient(135deg,var(--purple),var(--blue));color:#fff;font-weight:800}.btn.secondary{background:rgba(255,255,255,.07);border:1px solid var(--line)}.btn.danger{background:rgba(239,68,68,.15);border:1px solid rgba(239,68,68,.35);color:#ffd3d3}
+input,select,textarea{width:100%;background:#0b1220;border:1px solid var(--line);border-radius:14px;color:var(--text);padding:11px;outline:none}textarea{min-height:70px}.row{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin:10px 0}.row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin:10px 0}
+.day{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:14px;border:1px solid var(--line);border-radius:20px;margin-bottom:10px;background:linear-gradient(135deg,rgba(139,92,246,.20),rgba(14,165,233,.10))}.day b{display:block}.day span{font-size:12px;color:var(--muted)}
+.tabs{position:fixed;bottom:0;left:0;right:0;background:rgba(8,11,18,.95);backdrop-filter:blur(18px);border-top:1px solid var(--line);display:flex;gap:7px;padding:9px 10px calc(9px + env(safe-area-inset-bottom));z-index:50}.tab{flex:1;border:1px solid var(--line);background:rgba(255,255,255,.05);color:var(--muted);border-radius:15px;padding:10px 4px;font-size:12px}.tab.active{background:linear-gradient(135deg,var(--purple),var(--blue));color:#fff;border:0}
+.screen{display:none}.screen.active{display:block}.exercise{background:rgba(255,255,255,.045);border:1px solid var(--line);border-radius:20px;padding:13px;margin:12px 0}.exhead{display:flex;justify-content:space-between;gap:10px}.title{font-weight:900;font-size:17px;background:transparent;border:0;padding:0}.pill{display:inline-block;border:1px solid var(--line);background:rgba(255,255,255,.06);border-radius:999px;padding:6px 9px;font-size:12px;color:#dbeafe;margin:5px 4px 2px 0}.mini{font-size:12px;color:var(--muted);line-height:1.45}.divider{height:1px;background:var(--line);margin:13px 0}.set{display:grid;grid-template-columns:48px 1fr 1fr;gap:8px;align-items:center;margin:8px 0}.set b{font-size:12px;color:var(--muted)}.plates{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin:8px 0}.plate{background:#0b1220;border:1px solid var(--line);border-radius:13px;padding:10px 0;color:white;font-weight:900}.rec{margin-top:10px;border-radius:15px;padding:10px;font-size:13px;background:rgba(245,158,11,.10);border:1px solid rgba(245,158,11,.28);color:#fff0c2}.rec.good{background:rgba(34,197,94,.10);border-color:rgba(34,197,94,.28);color:#d9ffe7}.rec.bad{background:rgba(239,68,68,.10);border-color:rgba(239,68,68,.28);color:#ffd0d0}.item{padding:12px 0;border-bottom:1px solid var(--line)}.item:last-child{border-bottom:0}.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.hidden{display:none}
+</style>
 </head>
 <body>
-<header><h1>Workout Tracker</h1><div class="sub" id="todayLine"></div></header>
-<main>
-  <section id="dashboard"></section>
-  <section id="workout" class="hidden"></section>
-  <section id="history" class="hidden"></section>
-  <section id="prs" class="hidden"></section>
-  <section id="settings" class="hidden"></section>
-</main>
-<nav class="tabs">
-  <button onclick="showTab('dashboard')" class="active">Home</button><button onclick="showTab('workout')">Workout</button><button onclick="showTab('history')">History</button><button onclick="showTab('prs')">PRs</button><button onclick="showTab('settings')">Edit</button>
-</nav>
-<div id="modal" class="hidden"></div>
+<div class="app">
+<div class="header"><div class="top"><div><h1>Atlas Strength v1.0</h1><div class="sub">Planet Fitness Smith-machine workout tracker</div></div><div class="badge" id="badge">Day 1 / 8</div></div></div>
+
+<section id="home" class="screen active">
+<div class="grid">
+<div class="card"><div class="metric" id="done">0</div><div class="label">Workouts logged</div></div>
+<div class="card"><div class="metric" id="prs">0</div><div class="label">PRs tracked</div></div>
+<div class="card"><div class="metric" id="trend">0%</div><div class="label">Volume trend</div></div>
+<div class="card"><div class="metric" id="lastCardio">—</div><div class="label">Last cardio</div></div>
+<div class="card wide"><h3>Next Up</h3><div id="next"></div><div class="actions"><button class="btn" onclick="openDay(state.currentDay)">Start Workout</button><button class="btn secondary" onclick="nextDay()">Skip / Next Day</button></div></div>
+</div>
+<h2>Your 8-Day Split</h2><div id="days"></div>
+</section>
+
+<section id="workout" class="screen">
+<div class="card wide"><div class="top"><div><h2 id="wtitle" style="margin:0"></h2><div class="mini" id="wsub"></div></div><button class="btn secondary" onclick="show('home')">Back</button></div><div class="divider"></div><div id="exlist"></div>
+<h3>Cardio Finisher</h3><div class="row"><select id="ctype"><option>Stairmaster</option><option>Run</option><option>Walk</option><option>Bike</option><option>None</option></select><input id="ctime" type="number" placeholder="Minutes"></div><div class="row"><input id="cdist" placeholder="Miles / floors"><input id="clevel" placeholder="Level / pace notes"></div><textarea id="notes" placeholder="Workout notes"></textarea><div class="actions"><button class="btn" onclick="saveWorkout()">Save Workout</button><button class="btn secondary" onclick="addExercise()">Add Exercise</button></div></div>
+</section>
+
+<section id="progress" class="screen"><h2>PRs & Recommendations</h2><div class="card wide"><h3>Achievements</h3><div id="achievements" class="mini"></div><div class="divider"></div><h3>Exercise History</h3><select id="exercisePick" onchange="renderExerciseDetail()"></select><div id="exerciseDetail" class="mini"></div><div class="divider"></div><h3>Exercise PRs</h3><div id="plist"></div></div></section>
+<section id="history" class="screen"><h2>History</h2><div class="card wide" id="hlist"></div></section>
+
+<section id="nutrition" class="screen">
+<h2>Nutrition</h2>
+<div class="card wide">
+  <h3>Bodyweight</h3>
+  <div class="row">
+    <input id="bodyWeightInput" type="number" placeholder="Today's bodyweight">
+    <button class="btn" onclick="saveBodyWeight()">Save Weight</button>
+  </div>
+  <div class="mini" id="bodyWeightSummary">No weigh-ins yet.</div>
+  <div class="divider"></div>
+  <h3>Progress Photos</h3>
+  <input id="photoNote" placeholder="Photo note / description">
+  <button class="btn secondary" onclick="savePhotoNote()">Save Photo Note</button>
+  <div class="mini" id="photoList">No photo notes yet.</div>
+  <div class="divider"></div>
+  <h3>Daily Targets</h3>
+  <div class="grid">
+    <div class="card"><div class="metric" id="targetProtein">220g</div><div class="label">Protein</div></div>
+    <div class="card"><div class="metric" id="targetFat">80g</div><div class="label">Fat</div></div>
+    <div class="card"><div class="metric" id="targetCarbs">180g</div><div class="label">Carbs</div></div>
+    <div class="card"><div class="metric" id="targetCalories">2380</div><div class="label">Calories</div></div>
+  </div>
+  <div class="divider"></div>
+  <h3>Log Food / Meal</h3>
+  <input id="mealName" placeholder="Meal name">
+  <div class="row">
+    <input id="mealProtein" type="number" placeholder="Protein g">
+    <input id="mealFat" type="number" placeholder="Fat g">
+  </div>
+  <div class="row">
+    <input id="mealCarbs" type="number" placeholder="Carbs g">
+    <input id="mealCalories" type="number" placeholder="Calories">
+  </div>
+  <button class="btn" onclick="saveMeal()">Save Meal</button>
+  <div class="divider"></div>
+  <h3>Today</h3>
+  <div class="grid">
+    <div class="card"><div class="metric" id="todayProtein">0g</div><div class="label">Protein</div></div>
+    <div class="card"><div class="metric" id="todayFat">0g</div><div class="label">Fat</div></div>
+    <div class="card"><div class="metric" id="todayCarbs">0g</div><div class="label">Carbs</div></div>
+    <div class="card"><div class="metric" id="todayCalories">0</div><div class="label">Calories</div></div>
+  </div>
+  <div class="divider"></div>
+  <div id="mealList" class="mini">No meals logged today.</div>
+</div>
+</section>
+
+<section id="settings" class="screen"><h2>Settings</h2><div class="card wide"><h3>Smith Machine</h3><div class="row"><div><div class="label">Smith resistance</div><input id="bar" type="number"></div><div><div class="label">Default add per side</div><input id="jump" type="number"></div></div><button class="btn" onclick="saveSettings()">Save Settings</button><div class="divider"></div><h3>Backup</h3><div class="actions"><button class="btn secondary" onclick="exportData()">Export Data</button><button class="btn danger" onclick="resetData()">Reset App</button></div><textarea id="exportBox" placeholder="Export appears here"></textarea></div></section>
+</div>
+<nav class="tabs"><button class="tab active" onclick="show('home',this)">Home</button><button class="tab" onclick="show('progress',this)">Progress</button><button class="tab" onclick="show('history',this)">History</button><button class="tab" onclick="show('nutrition',this)">Nutrition</button><button class="tab" onclick="show('settings',this)">Settings</button></nav>
+
 <script>
-const KEY='bobbyWorkoutTracker_v1';
-const defaultProgram=[
- {name:'Day 1: Quad-Dominant Leg Day',rest:false,exercises:[['Squats',4,'8-10','45,25'],['Leg Press',4,'8-10','260'],['Bulgarian Split Squats',3,'10-12',''],['Leg Extensions',4,'12-15','30'],['Calf Raises',4,'15-20','100']]},
- {name:'Day 2: Chest with Triceps',rest:false,exercises:[['Bench Press',4,'8-10','45,10'],['Incline Dumbbell Press',4,'10-12','25'],['Cable Chest Flyers',3,'12-15','80'],['Triceps Press',3,'10-12','100'],['Tricep Push Downs',4,'12-15','50']]},
- {name:'Day 3: Back with Biceps',rest:false,exercises:[['Deadlifts',4,'6-8','45,45,25'],['Barbell Rows',4,'8-10','45'],['Lat Pull Downs',4,'10-12','85'],['Seated Cable Rows',3,'10-12','105'],['Biceps Curls',3,'12-15','40']]},
- {name:'Day 4: Rest',rest:true,exercises:[]},
- {name:'Day 5: Shoulders with Chest',rest:false,exercises:[['Overhead Press',4,'8-10','80'],['Lateral Raises',4,'12-15','15s'],['Rear Delt Flyers',4,'12-15','90'],['Seated Chest Press',3,'10-12','130'],['Cable Lateral Raises',3,'12-15','5']]},
- {name:'Day 6: Hamstrings with Back',rest:false,exercises:[['Romanian Deadlift',4,'8-10','45,25,10'],['Hamstring Curls',4,'12-15','80'],['Lunges',3,'10-12 per leg','20 lb KB'],['Lat Pulldown Machine',3,'8-10','100'],['T-Bar Rows',3,'10-12','100']]},
- {name:'Day 7: Arms - Biceps & Triceps',rest:false,exercises:[['Barbell Curls',4,'8-10','60'],['Incline Dumbbell Curl',3,'8-12','20'],['Hammer Curl',3,'8-12','20'],['Skull Crushers',4,'10-12','60'],['Tricep Overhead Extension',3,'12-15','25,25,25'],['Preacher Curls',3,'12-15','60'],['Cable Push Downs',3,'12-15','45']]},
- {name:'Day 8: Rest',rest:true,exercises:[]}
-].map(d=>({...d,exercises:d.exercises.map(e=>({name:e[0],sets:e[1],repRange:e[2],defaultWeight:e[3]}))}));
-let state=JSON.parse(localStorage.getItem(KEY)||'null')||{program:defaultProgram,logs:[],cycleDay:0,bodyweights:[]};
-let activeDay=state.cycleDay||0; let draft=null;
-function save(){localStorage.setItem(KEY,JSON.stringify(state));renderAll()}
-function fmt(d){return new Date(d).toLocaleDateString()}
-function today(){return new Date().toISOString().slice(0,10)}
-function showTab(id){document.querySelectorAll('main>section').forEach(s=>s.classList.add('hidden'));document.getElementById(id).classList.remove('hidden');document.querySelectorAll('.tabs button').forEach(b=>b.classList.remove('active'));[...document.querySelectorAll('.tabs button')].find(b=>b.textContent.toLowerCase().includes(id==='dashboard'?'home':id))?.classList.add('active');renderAll()}
-function lastLogForExercise(name){return [...state.logs].reverse().flatMap(l=>l.exercises.map(e=>({...e,date:l.date}))).find(e=>e.name===name)}
-function bestSet(ex){let best={weight:0,reps:0,vol:0};ex.sets?.forEach(s=>{let w=Number(s.weight)||0,r=Number(s.reps)||0;if(w*r>best.vol)best={weight:w,reps:r,vol:w*r}});return best}
-function exercisePR(name){let best={weight:0,reps:0,date:'',vol:0};state.logs.forEach(l=>l.exercises.forEach(e=>{if(e.name===name){let b=bestSet(e); if(b.weight>best.weight || b.vol>best.vol) best={...b,date:l.date}}}));return best}
-function renderDashboard(){let next=state.program[state.cycleDay]||state.program[0];let total=state.logs.length;let last=state.logs[state.logs.length-1];let prs=countPRs();document.getElementById('todayLine').textContent=new Date().toLocaleString([], {weekday:'long',month:'short',day:'numeric',year:'numeric'});
- dashboard.innerHTML=`<div class="card hero"><div class="row between"><div class="row"><div class="badge">${state.cycleDay+1}</div><div><div class="muted">Next Up</div><div class="bigtitle">${next.name}</div></div></div><button class="primary" onclick="startDay(${state.cycleDay})">Start Workout</button></div><div class="note">Your 8-day split is loaded. Save a workout and the app automatically moves to the next day.</div></div>
- <div class="grid tight"><div class="stat"><span class="muted">Completed</span><strong>${total}</strong><span class="note">total sessions</span></div><div class="stat"><span class="muted">PRs</span><strong>${prs}</strong><span class="note">tracked lifts</span></div><div class="stat"><span class="muted">Last Workout</span><strong>${last?fmt(last.date):'None'}</strong><span class="note">most recent save</span></div><div class="stat"><span class="muted">Cycle</span><strong>${state.cycleDay+1}/8</strong><span class="note">current split day</span></div></div>
- <div class="card"><div class="title">Choose a Day</div>${state.program.map((d,i)=>`<button class="dayBtn" onclick="startDay(${i})"><div class="row between"><span><b>${d.name}</b><br><span class="muted">${d.rest?'Recovery / optional cardio':d.exercises.length+' exercises + cardio finisher'}</span></span><span class="pill">Day ${i+1}</span></div></button>`).join('')}</div>`}
-function countPRs(){let names=[...new Set(state.program.flatMap(d=>d.exercises.map(e=>e.name)))];return names.filter(n=>exercisePR(n).weight>0).length}
-function startDay(i){activeDay=i;let d=state.program[i];draft={date:today(),dayIndex:i,dayName:d.name,exercises:d.exercises.map(ex=>({name:ex.name,repRange:ex.repRange,sets:Array.from({length:ex.sets},(_,k)=>({weight:ex.defaultWeight,reps:''}))})),cardio:{type:'Stairmaster',minutes:'',distance:'',level:'',calories:''},notes:''};showTab('workout')}
-function renderWorkout(){let d=state.program[activeDay]; if(!draft) startDay(activeDay); if(draft.dayIndex!==activeDay) startDay(activeDay);
- workout.innerHTML=`<div class="card"><div class="row between"><div><div class="muted">Logging</div><div class="title">${draft.dayName}</div></div><select onchange="activeDay=Number(this.value);startDay(activeDay)">${state.program.map((x,i)=>`<option value="${i}" ${i===activeDay?'selected':''}>${x.name}</option>`).join('')}</select></div>${d.rest?`<p>Rest day. You can still save notes or cardio.</p>`:''}</div>
- ${draft.exercises.map((ex,ei)=>exerciseHTML(ex,ei)).join('')}
- <div class="card"><div class="title">Cardio Finish</div><div class="grid"><div><label>Type</label><select onchange="draft.cardio.type=this.value"><option ${draft.cardio.type==='Stairmaster'?'selected':''}>Stairmaster</option><option ${draft.cardio.type==='Run'?'selected':''}>Run</option><option ${draft.cardio.type==='Walk'?'selected':''}>Walk</option><option ${draft.cardio.type==='Bike'?'selected':''}>Bike</option></select></div><div><label>Minutes</label><input type="number" value="${draft.cardio.minutes}" oninput="draft.cardio.minutes=this.value"></div><div><label>Distance</label><input value="${draft.cardio.distance}" oninput="draft.cardio.distance=this.value" placeholder="miles or steps"></div><div><label>Level</label><input value="${draft.cardio.level}" oninput="draft.cardio.level=this.value"></div><div><label>Calories</label><input type="number" value="${draft.cardio.calories}" oninput="draft.cardio.calories=this.value"></div></div></div>
- <div class="card"><label>Notes</label><textarea rows="3" oninput="draft.notes=this.value">${draft.notes||''}</textarea><div class="row"><button class="blue" onclick="addExerciseToDraft()">+ Add Exercise</button><button class="primary" onclick="saveWorkout()">Save Workout</button></div></div>`}
-function exerciseHTML(ex,ei){let last=lastLogForExercise(ex.name);let pr=exercisePR(ex.name);let suggest=suggestWeight(ex.name);return `<div class="exercise"><div class="row between"><div><div class="title">${ex.name}</div><span class="pill">Target ${ex.repRange}</span>${last?`<span class="pill">Last: ${bestSet(last).weight} x ${bestSet(last).reps}</span>`:''}${pr.weight?`<span class="pill good">PR: ${pr.weight} x ${pr.reps}</span>`:''}${suggest?`<span class="pill warn">Suggested: ${suggest}</span>`:''}</div><button class="small danger" onclick="draft.exercises.splice(${ei},1);renderWorkout()">Remove</button></div>${ex.sets.map((s,si)=>`<div class="setrow"><b>Set ${si+1}</b><div><label>Weight</label><input value="${s.weight}" oninput="draft.exercises[${ei}].sets[${si}].weight=this.value"></div><div><label>Reps</label><input type="number" value="${s.reps}" oninput="draft.exercises[${ei}].sets[${si}].reps=this.value"></div><button class="small" onclick="draft.exercises[${ei}].sets.splice(${si},1);renderWorkout()">×</button></div>`).join('')}<button class="small" onclick="draft.exercises[${ei}].sets.push({weight:'',reps:''});renderWorkout()">+ Set</button></div>`}
-function suggestWeight(name){let last=lastLogForExercise(name); if(!last)return ''; let nums=last.sets.map(s=>Number(s.reps)||0); if(!nums.length)return ''; let min=Math.min(...nums), maxW=Math.max(...last.sets.map(s=>Number(s.weight)||0)); return min>=10? maxW+5+' lbs': maxW+' lbs'}
-function addExerciseToDraft(){let name=prompt('Exercise name?'); if(!name)return; draft.exercises.push({name,repRange:'8-12',sets:[{weight:'',reps:''},{weight:'',reps:''},{weight:'',reps:''}]});renderWorkout()}
-function saveWorkout(){state.logs.push(JSON.parse(JSON.stringify(draft))); state.cycleDay=(draft.dayIndex+1)%state.program.length; draft=null; save(); showTab('dashboard')}
-function renderHistory(){history.innerHTML=`<div class="card"><div class="title">Workout History</div>${state.logs.length?`<table><tr><th>Date</th><th>Day</th><th>Cardio</th><th></th></tr>${[...state.logs].reverse().map((l,idx)=>`<tr><td>${fmt(l.date)}</td><td>${l.dayName}</td><td>${l.cardio?.type||''} ${l.cardio?.minutes?l.cardio.minutes+' min':''}</td><td><button class="small" onclick="viewLog(${state.logs.length-1-idx})">View</button></td></tr>`).join('')}</table>`:'No workouts saved yet.'}</div>`}
-function viewLog(i){let l=state.logs[i];modal.innerHTML=`<div class="modal"><div class="modalBox"><div class="row between"><div class="title">${l.dayName}</div><button onclick="closeModal()">Close</button></div><p class="muted">${fmt(l.date)}</p>${l.exercises.map(e=>`<div class="exercise"><b>${e.name}</b><br>${e.sets.map((s,k)=>`<span class="pill">Set ${k+1}: ${s.weight||0} x ${s.reps||0}</span>`).join('')}</div>`).join('')}<div class="card"><b>Cardio:</b> ${l.cardio?.type||''} ${l.cardio?.minutes||''} min ${l.cardio?.distance||''}</div><p>${l.notes||''}</p><button class="danger" onclick="deleteLog(${i})">Delete</button></div></div>`;modal.classList.remove('hidden')}
-function closeModal(){modal.classList.add('hidden')}
-function deleteLog(i){if(confirm('Delete this workout?')){state.logs.splice(i,1);closeModal();save()}}
-function renderPRs(){let names=[...new Set(state.program.flatMap(d=>d.exercises.map(e=>e.name)))];prs.innerHTML=`<div class="card"><div class="title">Personal Records</div><table><tr><th>Exercise</th><th>Best</th><th>Date</th><th>Trend</th></tr>${names.map(n=>{let p=exercisePR(n),t=trend(n);return `<tr><td>${n}</td><td>${p.weight?p.weight+' x '+p.reps:'-'}</td><td>${p.date?fmt(p.date):'-'}</td><td class="${t.includes('Up')?'good':t.includes('Down')?'bad':'muted'}">${t}</td></tr>`}).join('')}</table></div>`}
-function trend(name){let entries=[];state.logs.forEach(l=>l.exercises.forEach(e=>{if(e.name===name)entries.push(bestSet(e).vol)}));if(entries.length<2)return 'Need 2 logs';let a=entries[entries.length-2],b=entries[entries.length-1]; if(b>a)return 'Up'; if(b<a)return 'Down'; return 'Same'}
-function renderSettings(){settings.innerHTML=`<div class="card"><div class="title">Edit Program</div><p class="note">Change exercise names, set counts, rep ranges, or starting weights. This updates future workouts only.</p>${state.program.map((d,di)=>`<div class="exercise"><label>Day Name</label><input value="${d.name}" onchange="state.program[${di}].name=this.value;save()"><div class="row"><label><input type="checkbox" ${d.rest?'checked':''} onchange="state.program[${di}].rest=this.checked;save()"> Rest Day</label><button class="small blue" onclick="addProgramExercise(${di})">+ Exercise</button></div>${d.exercises.map((e,ei)=>`<div class="card"><label>Exercise</label><input value="${e.name}" onchange="state.program[${di}].exercises[${ei}].name=this.value;save()"><div class="grid"><div><label>Sets</label><input type="number" value="${e.sets}" onchange="state.program[${di}].exercises[${ei}].sets=Number(this.value);save()"></div><div><label>Rep Range</label><input value="${e.repRange}" onchange="state.program[${di}].exercises[${ei}].repRange=this.value;save()"></div><div><label>Default Weight</label><input value="${e.defaultWeight}" onchange="state.program[${di}].exercises[${ei}].defaultWeight=this.value;save()"></div></div><button class="small danger" onclick="state.program[${di}].exercises.splice(${ei},1);save()">Remove</button></div>`).join('')}</div>`).join('')}</div><div class="card"><button class="danger" onclick="resetAll()">Reset Everything</button><button onclick="exportData()">Export Backup</button><label>Import Backup</label><textarea id="importBox" rows="3"></textarea><button onclick="importData()">Import</button></div>`}
-function addProgramExercise(di){state.program[di].exercises.push({name:'New Exercise',sets:3,repRange:'8-12',defaultWeight:''});save()}
-function resetAll(){if(confirm('This deletes all saved workouts and resets the app.')){state={program:defaultProgram,logs:[],cycleDay:0,bodyweights:[]};save()}}
-function exportData(){navigator.clipboard.writeText(JSON.stringify(state));alert('Backup copied to clipboard')}
-function importData(){try{state=JSON.parse(document.getElementById('importBox').value);save();alert('Imported')}catch(e){alert('Import failed')}}
-function renderAll(){renderDashboard(); if(document.getElementById('workout')&&!workout.classList.contains('hidden'))renderWorkout(); renderHistory(); renderPRs(); renderSettings()}
-renderAll();
+function ex(name,sets,min,max,plates,smith,type){return{id:Math.random().toString(36).slice(2),name,sets,min,max,plates,smith,type}}
+const split=[
+{name:"Quad-Dominant Leg Day",rest:false,exercises:[ex("Squat",4,8,10,[45,25],true,"compound"),ex("Leg Press",4,8,10,[260],false,"compound"),ex("Bulgarian Split Squat",3,10,12,[],false,"accessory"),ex("Leg Extension",4,12,15,[30],false,"isolation"),ex("Calf Raise",4,15,20,[100],false,"isolation")]},
+{name:"Chest with Triceps",rest:false,exercises:[ex("Bench Press",4,8,10,[45,10],true,"compound"),ex("Incline Dumbbell Press",4,10,12,[25],false,"accessory"),ex("Cable Chest Fly",3,12,15,[80],false,"isolation"),ex("Triceps Press",3,10,12,[100],false,"isolation"),ex("Tricep Pushdown",4,12,15,[50],false,"isolation")]},
+{name:"Back with Biceps",rest:false,exercises:[ex("Deadlift",4,6,8,[45,45,25],true,"compound"),ex("Barbell Row",4,8,10,[45],true,"compound"),ex("Lat Pulldown",4,10,12,[85],false,"accessory"),ex("Seated Cable Row",3,10,12,[105],false,"accessory"),ex("Biceps Curl",3,12,15,[40],false,"isolation")]},
+{name:"Rest",rest:true,exercises:[]},
+{name:"Shoulders with Chest",rest:false,exercises:[ex("Overhead Press",4,8,10,[80],true,"compound"),ex("Lateral Raise",4,12,15,[15],false,"isolation"),ex("Rear Delt Fly",4,12,15,[90],false,"isolation"),ex("Seated Chest Press",3,10,12,[130],false,"accessory"),ex("Cable Lateral Raise",3,12,15,[5],false,"isolation")]},
+{name:"Hamstrings with Back",rest:false,exercises:[ex("Romanian Deadlift",4,8,10,[45,25,10],true,"compound"),ex("Hamstring Curl",4,12,15,[80],false,"isolation"),ex("Lunge",3,10,12,[20],false,"accessory"),ex("Lat Pulldown Machine",3,8,10,[100],false,"accessory"),ex("T-Bar Row",3,10,12,[100],false,"accessory")]},
+{name:"Arms",rest:false,exercises:[ex("Barbell Curl",4,8,10,[60],false,"isolation"),ex("Incline Dumbbell Curl",3,8,12,[20],false,"isolation"),ex("Hammer Curl",3,8,12,[20],false,"isolation"),ex("Skull Crusher",4,10,12,[60],false,"isolation"),ex("Overhead Cable Extension",3,12,15,[25,25,25],false,"isolation"),ex("Preacher Curl",3,12,15,[60],false,"isolation"),ex("Cable Pushdown",3,12,15,[45],false,"isolation")]},
+{name:"Rest",rest:true,exercises:[]}
+];
+const plates=[45,35,25,10,5,2.5];
+let state=JSON.parse(localStorage.getItem("atlasPF")||"null")||{split,logs:[],currentDay:0,settings:{bar:25,jump:5},nutrition:{targets:{protein:220,fat:80,carbs:180,calories:2380},meals:[]}};
+let activeDay=0, entries=[];
+function save(){localStorage.setItem("atlasPF",JSON.stringify(state))}
+function total(arr,smith){arr=(arr||[]).map(Number).filter(n=>!isNaN(n));return smith?arr.reduce((a,b)=>a+b,0)*2+Number(state.settings.bar||25):(arr.length==1?arr[0]:arr.reduce((a,b)=>a+b,0))}
+function ptxt(a){return a&&a.length?a.join(" + "):"manual/bodyweight"}
+function e1rm(w,r){return Math.round(w*(1+r/30))}
+function vol(w,reps){return w*reps.reduce((a,b)=>a+Number(b||0),0)}
+function logsFor(n){return state.logs.flatMap(l=>l.entries.map(e=>({...e,date:l.date,day:l.dayName}))).filter(e=>e.name==n)}
+function rec(t,e){e=e||t;let reps=e.reps||[],top=Number(t.max),min=Number(t.min),w=total(e.plates??t.plates,t.smith),hit=reps.length>=t.sets&&reps.slice(0,t.sets).every(r=>Number(r)>=top),fail=reps.length>=t.sets&&reps.slice(0,t.sets).filter(r=>Number(r)<min).length>=2,j=t.type=="compound"?Number(state.settings.jump||5):(w<50?2.5:5);if(fail)return["bad",`Deload suggestion: reduce around 10% next time and rebuild clean reps.`];if(hit){if(t.smith){let np=[...(e.plates??t.plates),j];return["good",`Move up: add ${j} lb per side. New setup ${ptxt(np)} per side = ${total(np,true)} lb total.`]}return["good",`Move up next time. Suggested working weight: ${Math.round(w+j)} lb.`]}return["",`Stay here. Goal: hit ${top} reps on all ${t.sets} sets. Current total: ${w||"—"} lb.`]}
+function show(id,btn){document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));document.getElementById(id).classList.add("active");if(btn){document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));btn.classList.add("active")}render()}
+
+function todayKey(){return new Date().toISOString().slice(0,10)}
+
+function ensureV1(){
+  if(!state.bodyweights) state.bodyweights=[];
+  if(!state.photoNotes) state.photoNotes=[];
+  if(!state.nutrition) state.nutrition={targets:{protein:220,fat:80,carbs:180,calories:2380},meals:[]};
+}
+function saveBodyWeight(){
+  ensureV1();
+  let v=Number(bodyWeightInput.value||0);
+  if(!v){alert("Enter bodyweight first.");return}
+  state.bodyweights.push({date:todayKey(),weight:v});
+  bodyWeightInput.value="";
+  save();renderNutrition();alert("Bodyweight saved.");
+}
+function savePhotoNote(){
+  ensureV1();
+  if(!photoNote.value.trim()){alert("Add a note first.");return}
+  state.photoNotes.push({date:todayKey(),note:photoNote.value.trim()});
+  photoNote.value="";
+  save();renderNutrition();alert("Photo note saved.");
+}
+function renderBodyweightAndPhotos(){
+  ensureV1();
+  if(!document.getElementById("bodyWeightSummary")) return;
+  let bw=state.bodyweights||[];
+  bodyWeightSummary.innerHTML=bw.length?`Last weigh-in: <b>${bw.at(-1).weight} lb</b> on ${bw.at(-1).date}<br>Starting: ${bw[0].weight} lb • Change: ${(bw.at(-1).weight-bw[0].weight).toFixed(1)} lb`:"No weigh-ins yet.";
+  let photos=state.photoNotes||[];
+  photoList.innerHTML=photos.length?photos.slice(-5).reverse().map(p=>`<div class="item"><b>${p.date}</b><div class="mini">${p.note}</div></div>`).join(""):"No photo notes yet.";
+}
+function renderAchievements(){
+  if(!document.getElementById("achievements")) return;
+  let total=state.logs.length;
+  let all=state.logs.flatMap(l=>l.entries||[]);
+  let prs=[...new Set(state.split.flatMap(d=>d.exercises.map(e=>e.name)))].filter(n=>logsFor(n).length).length;
+  let cardio=state.logs.filter(l=>l.cardio&&l.cardio.type&&l.cardio.type!="None").length;
+  let big=all.filter(e=>Number(e.total||0)>=225).length;
+  let arr=[
+    total>=1?"✅ First workout logged":"⬜ First workout logged",
+    total>=10?"✅ 10 workouts completed":"⬜ 10 workouts completed",
+    total>=30?"✅ 30 workouts completed":"⬜ 30 workouts completed",
+    prs>=5?"✅ 5 exercises with PRs":"⬜ 5 exercises with PRs",
+    cardio>=10?"✅ 10 cardio finishers":"⬜ 10 cardio finishers",
+    big>=1?"✅ First 225+ lb lift logged":"⬜ First 225+ lb lift logged"
+  ];
+  achievements.innerHTML=arr.join("<br>");
+}
+function renderExercisePicker(){
+  if(!document.getElementById("exercisePick")) return;
+  let names=[...new Set(state.split.flatMap(d=>d.exercises.map(e=>e.name)))];
+  let current=exercisePick.value||names[0];
+  exercisePick.innerHTML=names.map(n=>`<option ${n==current?"selected":""}>${n}</option>`).join("");
+  renderExerciseDetail();
+}
+function renderExerciseDetail(){
+  if(!document.getElementById("exerciseDetail")) return;
+  let n=exercisePick.value;
+  let logs=logsFor(n);
+  if(!logs.length){exerciseDetail.innerHTML="No logs yet for this exercise.";return}
+  exerciseDetail.innerHTML=logs.slice(-10).reverse().map(e=>`<div class="item"><b>${new Date(e.date).toLocaleDateString()}</b><div class="mini">${e.total||"—"} lb × ${(e.reps||[]).filter(Boolean).join("/")} • Est. 1RM ${e.e1rm||"—"} • Volume ${e.volume||0}</div></div>`).join("");
+}
+
+function renderNutrition(){
+  ensureV1();
+  renderBodyweightAndPhotos();
+  if(!state.nutrition){state.nutrition={targets:{protein:220,fat:80,carbs:180,calories:2380},meals:[]};save()}
+  let t=state.nutrition.targets;
+  if(document.getElementById("targetProtein")){
+    targetProtein.textContent=t.protein+"g"; targetFat.textContent=t.fat+"g"; targetCarbs.textContent=t.carbs+"g"; targetCalories.textContent=t.calories;
+    let meals=(state.nutrition.meals||[]).filter(m=>m.date===todayKey());
+    let totals=meals.reduce((a,m)=>{a.protein+=Number(m.protein||0);a.fat+=Number(m.fat||0);a.carbs+=Number(m.carbs||0);a.calories+=Number(m.calories||0);return a},{protein:0,fat:0,carbs:0,calories:0});
+    todayProtein.textContent=totals.protein+"g"; todayFat.textContent=totals.fat+"g"; todayCarbs.textContent=totals.carbs+"g"; todayCalories.textContent=totals.calories;
+    mealList.innerHTML=meals.length?meals.map(m=>`<div class="item"><b>${m.name||"Meal"}</b><div class="mini">Protein ${m.protein||0}g • Fat ${m.fat||0}g • Carbs ${m.carbs||0}g • ${m.calories||0} cal</div></div>`).join(""):"No meals logged today.";
+  }
+}
+function saveMeal(){
+  if(!state.nutrition){state.nutrition={targets:{protein:220,fat:80,carbs:180,calories:2380},meals:[]}}
+  state.nutrition.meals.push({date:todayKey(),name:mealName.value,protein:mealProtein.value,fat:mealFat.value,carbs:mealCarbs.value,calories:mealCalories.value});
+  mealName.value="";mealProtein.value="";mealFat.value="";mealCarbs.value="";mealCalories.value="";
+  save();renderNutrition();alert("Meal saved.");
+}
+
+function render(){badge.textContent=`Day ${state.currentDay+1} / 8`;done.textContent=state.logs.length;prs.textContent=[...new Set(state.split.flatMap(d=>d.exercises.map(e=>e.name)))].filter(n=>logsFor(n).length).length;trend.textContent=trendCalc()+"%";let lc=state.logs.at(-1)?.cardio;lastCardio.textContent=lc&&lc.type!="None"?`${lc.type} ${lc.time||0}m`:"—";let d=state.split[state.currentDay];next.innerHTML=`<div class="metric" style="font-size:22px">${d.name}</div><div class="label">${d.rest?"Recovery day":"Smith lifts use plates per side + 25 lb resistance"}</div>`;days.innerHTML=state.split.map((d,i)=>`<div class="day" onclick="openDay(${i})"><div><b>Day ${i+1}: ${d.name}</b><span>${d.rest?"Rest":d.exercises.length+" exercises"} • ${i==state.currentDay?"Current":"Tap to open"}</span></div><button class="btn secondary">${d.rest?"View":"Start"}</button></div>`).join("");bar.value=state.settings.bar;jump.value=state.settings.jump;renderProgress();renderHistory();renderNutrition();renderAchievements();renderExercisePicker()}
+function openDay(i){activeDay=i;let d=state.split[i];wtitle.textContent=`Day ${i+1}: ${d.name}`;wsub.textContent=d.rest?"Rest, recovery, mobility, or light cardio.":"Enter reps. Smith lifts calculate total from plates per side.";entries=d.exercises.map(t=>({...t,plates:[...(t.plates||[])],reps:Array(t.sets).fill(""),notes:""}));ctype.value="Stairmaster";ctime.value="";cdist.value="";clevel.value="";notes.value="";renderWorkout();show("workout")}
+function renderWorkout(){let d=state.split[activeDay];if(d.rest){exlist.innerHTML='<div class="rec">Rest day. You can save cardio and notes only.</div>';return}exlist.innerHTML=entries.map((e,i)=>{let r=rec(e,e);return`<div class="exercise"><div class="exhead"><div><input class="title" value="${e.name}" onchange="entries[${i}].name=this.value"><div><span class="pill">${e.sets}×${e.min}-${e.max}</span><span class="pill">${e.smith?"Smith + "+state.settings.bar+" lb":"Manual"}</span><span class="pill">Total: ${total(e.plates,e.smith)||"—"} lb</span></div></div><button class="btn secondary" onclick="toggleSmith(${i})">${e.smith?"Smith":"Manual"}</button></div><div class="row3"><input type="number" value="${e.sets}" onchange="entries[${i}].sets=Number(this.value);entries[${i}].reps=Array(Number(this.value)).fill('');renderWorkout()"><input type="number" value="${e.min}" onchange="entries[${i}].min=Number(this.value)"><input type="number" value="${e.max}" onchange="entries[${i}].max=Number(this.value)"></div><div class="mini">${e.smith?"Tap plates for ONE SIDE. App doubles it and adds Smith resistance.":"Enter total machine/dumbbell/cable weight."}</div><div class="${e.smith?"plates":"hidden"}">${plates.map(p=>`<button class="plate" onclick="entries[${i}].plates.push(${p});renderWorkout()">+${p}</button>`).join("")}</div><div class="row"><input value="${ptxt(e.plates)}" onchange="entries[${i}].plates=this.value.split(/[, +]+/).map(Number).filter(n=>!isNaN(n));renderWorkout()"><button class="btn secondary" onclick="entries[${i}].plates=[];renderWorkout()">Clear</button></div>${Array.from({length:e.sets}).map((_,s)=>`<div class="set"><b>Set ${s+1}</b><input value="${total(e.plates,e.smith)||""}" readonly><input type="number" value="${e.reps[s]||""}" onchange="entries[${i}].reps[${s}]=this.value;renderWorkout()" placeholder="Reps"></div>`).join("")}<textarea placeholder="Notes" onchange="entries[${i}].notes=this.value">${e.notes||""}</textarea><div class="rec ${r[0]}">${r[1]}</div></div>`}).join("")}
+function toggleSmith(i){entries[i].smith=!entries[i].smith;renderWorkout()}
+function addExercise(){entries.push(ex("New Exercise",3,8,12,[],false,"accessory"));entries.at(-1).reps=["","",""];renderWorkout()}
+function saveWorkout(){let d=state.split[activeDay];let out=entries.map(e=>{let w=total(e.plates,e.smith),br=Math.max(...(e.reps||[]).map(x=>Number(x||0)),0);return{...e,total:w,e1rm:e1rm(w,br),volume:vol(w,e.reps||[])}});state.logs.push({date:new Date().toISOString(),dayIndex:activeDay,dayName:d.name,entries:out,cardio:{type:ctype.value,time:ctime.value,distance:cdist.value,level:clevel.value},notes:notes.value});state.currentDay=(activeDay+1)%state.split.length;save();render();show("home");alert("Workout saved")}
+function best(n){let a=logsFor(n);if(!a.length)return null;return a.sort((x,y)=>(y.e1rm||0)-(x.e1rm||0)||(y.volume||0)-(x.volume||0))[0]}
+function renderProgress(){let names=[...new Set(state.split.flatMap(d=>d.exercises.map(e=>e.name)))];plist.innerHTML=names.map(n=>{let b=best(n),t=state.split.flatMap(d=>d.exercises).find(e=>e.name==n),last=logsFor(n).at(-1),r=t?rec(t,last||t):["",""];return`<div class="item"><b>${n}</b><div class="mini">${b?`Best: ${b.total} lb • Est. 1RM: ${b.e1rm} lb • Volume: ${b.volume} lb`:"No logs yet"}</div><div class="rec ${r[0]}">${r[1]}</div></div>`}).join("")}
+function renderHistory(){hlist.innerHTML=state.logs.length?state.logs.slice().reverse().map(l=>`<div class="item"><b>${new Date(l.date).toLocaleDateString()} — ${l.dayName}</b><div class="mini">${l.entries.map(e=>`${e.name}: ${e.total||"—"} lb × ${(e.reps||[]).filter(Boolean).join("/")}`).join("<br>")}</div><div class="mini">Cardio: ${l.cardio.type} ${l.cardio.time?l.cardio.time+" min":""}</div></div>`).join(""):"No workouts yet."}
+function trendCalc(){if(state.logs.length<2)return 0;let r=state.logs.slice(-3).reduce((a,l)=>a+l.entries.reduce((x,e)=>x+(e.volume||0),0),0),p=state.logs.slice(-6,-3).reduce((a,l)=>a+l.entries.reduce((x,e)=>x+(e.volume||0),0),0);return p?Math.round((r-p)/p*100):(r?100:0)}
+function nextDay(){state.currentDay=(state.currentDay+1)%state.split.length;save();render()}
+function saveSettings(){state.settings.bar=Number(bar.value||25);state.settings.jump=Number(jump.value||5);save();render();alert("Settings saved")}
+function exportData(){exportBox.value=JSON.stringify(state,null,2)}
+function resetData(){if(confirm("Reset everything?")){localStorage.removeItem("atlasPF");location.reload()}}
+ensureV1(); save(); render()
 </script>
 </body>
 </html>
