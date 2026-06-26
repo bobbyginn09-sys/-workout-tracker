@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-<title>Atlas Strength v4</title>
+<title>Atlas Strength v4.3.3</title>
 <meta name="theme-color" content="#080b12">
 <style>
 :root{--bg:#070a12;--card:#111a2b;--card2:#18243a;--ink:#f8fbff;--muted:#9fb0c7;--line:rgba(255,255,255,.13);--blue:#0ea5e9;--purple:#8b5cf6;--green:#22c55e;--yellow:#f59e0b;--red:#ef4444}
@@ -21,7 +21,7 @@
 </head>
 <body>
 <div class="app">
-<div class="header"><div class="top"><div><h1>Atlas Strength v4</h1><div class="sub">PF Smith coaching + workout coach</div></div><div class="badge" id="badge">Day 1 / 8</div></div></div>
+<div class="header"><div class="top"><div><h1>Atlas Strength v4.3.3</h1><div class="sub">PF Smith / Cable / Machine / Free Weights</div></div><div class="badge" id="badge">Day 1 / 8</div></div></div>
 
 <section id="home" class="screen active">
 <div id="draftCard"></div>
@@ -36,8 +36,8 @@
 </section>
 
 <section id="workout" class="screen">
-<div class="card wide"><div class="top"><div><h2 id="wtitle" style="margin:0"></h2><div class="mini" id="wsub"></div><div class="mini" id="autosaveStatus">Autosave ready.</div></div><button class="btn secondary" onclick="show('home')">Back</button></div><div class="divider"></div><div id="exlist"></div>
-<h3>Cardio Finisher</h3><div class="row"><select id="ctype"><option>Stairmaster</option><option>Run</option><option>Walk</option><option>Bike</option><option>None</option></select><input id="ctime" type="number" placeholder="Minutes"></div><div class="row"><input id="cdist" placeholder="Miles / floors"><input id="clevel" placeholder="Level / pace"></div><textarea id="notes" placeholder="Workout notes"></textarea><div class="actions"><button class="btn" onclick="saveWorkout()">Save Workout</button><button class="btn secondary" onclick="addExercise()">Add Exercise</button></div></div>
+<div class="card wide"><div class="top"><div><h2 id="wtitle" style="margin:0"></h2><div class="mini" id="wsub"></div><div class="mini" id="autosaveStatus">Autosave ready.</div></div><button class="btn secondary" onclick="show('home')">Back</button></div><div class="divider"></div><div class="rec"><b>Workout editor:</b> Edit names directly, change equipment type, move exercises, delete exercises, or edit sets/reps. Changes save as your new workout layout.</div><div id="exlist"></div>
+<h3>Cardio Finisher</h3><div class="row"><select id="ctype"><option>Stairmaster</option><option>Run</option><option>Walk</option><option>Bike</option><option>None</option></select><input id="ctime" type="number" placeholder="Minutes"></div><div class="row"><input id="cdist" placeholder="Miles / floors"><input id="clevel" placeholder="Level / pace"></div><textarea id="notes" placeholder="Workout notes"></textarea><div class="actions"><button class="btn" onclick="saveWorkout()">Save Workout</button><button class="btn secondary" onclick="addExercise()">Add Custom</button><button class="btn secondary" onclick="addFromLibrary()">Exercise Library</button></div></div>
 </section>
 
 <section id="progress" class="screen">
@@ -142,7 +142,7 @@ draftCard.innerHTML=state.draft?`<div class="card wide" style="margin-bottom:12p
 renderProgress();renderReports();renderNutrition();renderSettings();
 }
 function recoveryScore(){let recent=state.logs.slice(-4);let meals=(state.nutrition.meals||[]).filter(m=>m.date===todayKey());let cal=meals.reduce((a,m)=>a+Number(m.calories||0),0);let protein=meals.reduce((a,m)=>a+Number(m.protein||0),0);let flags=0;if(recent.length>=4)flags++;if(cal&&cal<state.nutrition.targets.calories*.8)flags++;if(protein&&protein<state.nutrition.targets.protein*.75)flags++;let del=Object.values(state.coaching||{}).filter(c=>c.status==="deload").length;if(del)flags++;if(flags>=2)return{icon:"🔴",text:"Deload watch"};if(flags===1)return{icon:"🟡",text:"Watch recovery"};return{icon:"🟢",text:"Recovered"}}
-function openDay(i){activeDay=i;let d=state.split[i];wtitle.textContent=`Day ${i+1}: ${d.name}`;wsub.textContent=d.rest?"Rest day. You can save cardio or notes.":"Fast log: weights are prefilled, just enter reps.";entries=d.exercises.map(t=>({...t,plates:[...(t.plates||[])],reps:Array(t.sets).fill(""),notes:"",editingWeight:false}));ctype.value="Stairmaster";ctime.value="";cdist.value="";clevel.value="";notes.value="";renderWorkout();show("workout");autosaveDraft()}
+function openDay(i){activeDay=i;let d=state.split[i];wtitle.textContent=`Day ${i+1}: ${d.name}`;wsub.textContent=d.rest?"Rest day. You can save cardio or notes.":"Fast log: weights are prefilled, just enter reps.";entries=d.exercises.map(t=>({...t,plates:[...(t.plates||[])],reps:Array(t.sets).fill(""),notes:"",editingWeight:false,equipment:t.equipment||(t.smith?"Smith":(t.type==="machine"?"Machine":((t.type==="free"||t.type==="bodyweight")?"Free Weights":"Cable")))}));ctype.value="Stairmaster";ctime.value="";cdist.value="";clevel.value="";notes.value="";renderWorkout();show("workout");autosaveDraft()}
 
 let timerInterval=null, timerEnd=0, lastSummary=null;
 function progressForExercise(e){
@@ -210,50 +210,151 @@ function summaryScreen(savedLog){
   show("summary");
 }
 
+
+
+const exerciseLibrary=[
+  {name:"Dumbbell Bench Press",equipment:"Free Weights",type:"free",sets:3,min:8,max:12,plates:[25]},
+  {name:"Dumbbell Curl",equipment:"Free Weights",type:"free",sets:3,min:10,max:12,plates:[20]},
+  {name:"Bodyweight Push-Up",equipment:"Free Weights",type:"bodyweight",sets:3,min:10,max:20,plates:[0]},
+  {name:"Goblet Squat",equipment:"Free Weights",type:"free",sets:3,min:10,max:12,plates:[25]},
+  {name:"Cable Tricep Pushdown",equipment:"Cable",type:"cable",sets:3,min:12,max:15,plates:[50]},
+  {name:"Cable Row",equipment:"Cable",type:"cable",sets:3,min:10,max:12,plates:[80]},
+  {name:"Machine Chest Press",equipment:"Machine",type:"machine",sets:3,min:10,max:12,plates:[100]},
+  {name:"Machine Shoulder Press",equipment:"Machine",type:"machine",sets:3,min:10,max:12,plates:[80]}
+];
+function addFromLibrary(){
+  let list=exerciseLibrary.map((e,idx)=>`${idx+1}. ${e.name} (${e.equipment})`).join("\n");
+  let choice=Number(prompt("Add exercise number:\n\n"+list));
+  if(!choice || !exerciseLibrary[choice-1]) return;
+  let lib=exerciseLibrary[choice-1];
+  let e={...lib,id:Math.random().toString(36).slice(2),smith:lib.equipment==="Smith",reps:Array(lib.sets).fill(""),notes:"",editingWeight:false};
+  entries.push(e);
+  autosaveDraft();saveExerciseChangesToSplit();renderWorkout();
+}
+
+function equipmentLabel(e){
+  if(e.equipment) return e.equipment;
+  if(e.smith) return "Smith";
+  if(e.type==="machine") return "Machine";
+  if(e.type==="free") return "Free Weights";
+  if(e.type==="bodyweight") return "Free Weights";
+  return "Cable";
+}
+function setEquipment(i,val){
+  entries[i].equipment=val;
+  entries[i].smith=(val==="Smith");
+  if(val==="Cable") entries[i].type="cable";
+  if(val==="Machine") entries[i].type="machine";
+  if(val==="Free Weights") entries[i].type="free";
+  if(val==="Smith") entries[i].type=entries[i].type==="isolation"?"compound":entries[i].type;
+  autosaveDraft();
+  saveExerciseChangesToSplit();
+  renderWorkout();
+}
+function deleteExercise(i){
+  if(!confirm("Delete this exercise from this workout?")) return;
+  entries.splice(i,1);
+  autosaveDraft();
+  renderWorkout();
+}
+function moveExercise(i,dir){
+  let j=i+dir;
+  if(j<0 || j>=entries.length) return;
+  [entries[i],entries[j]]=[entries[j],entries[i]];
+  autosaveDraft();
+  renderWorkout();
+}
+function saveExerciseChangesToSplit(){
+  let d=state.split[activeDay];
+  if(!d || d.rest) return;
+  d.exercises=entries.map(e=>({
+    id:e.id||Math.random().toString(36).slice(2),
+    name:e.name,
+    sets:Number(e.sets||3),
+    min:Number(e.min||8),
+    max:Number(e.max||12),
+    plates:[...(e.plates||[])],
+    smith:equipmentLabel(e)==="Smith",
+    equipment:equipmentLabel(e),
+    type:e.type||equipmentLabel(e).toLowerCase()
+  }));
+  save();
+}
+function editSetScheme(i){
+  let sets=Number(prompt("Sets?", entries[i].sets)||entries[i].sets);
+  let min=Number(prompt("Minimum reps?", entries[i].min)||entries[i].min);
+  let max=Number(prompt("Maximum reps?", entries[i].max)||entries[i].max);
+  entries[i].sets=sets; entries[i].min=min; entries[i].max=max;
+  entries[i].reps=Array(sets).fill("");
+  autosaveDraft(); renderWorkout();
+}
+
 function renderWorkout(){
 let d=state.split[activeDay];
 if(d.rest){exlist.innerHTML='<div class="rec">Rest day. Save notes/cardio only.</div>';return}
 exlist.innerHTML=entries.map((e,i)=>{
+if(!e.equipment) e.equipment=e.smith?"Smith":(e.type==="machine"?"Machine":"Cable");
 let rr=rec(e,e), prog=progressForExercise(e), pct=e.sets?Math.round(prog.complete/e.sets*100):0;
 let weightEditor=e.editingWeight;
-let plateEditor=`<div class="${e.smith?"plates":"hidden"}">${plateOpts.map(p=>`<button class="plate" onclick="entries[${i}].plates.push(${p});autosaveDraft();renderWorkout()">+${p}</button>`).join("")}</div><div class="row"><input value="${ptxt(e.plates)}" onchange="entries[${i}].plates=this.value.split(/[, +]+/).map(Number).filter(n=>!isNaN(n));autosaveDraft();renderWorkout()"><button class="btn secondary" onclick="entries[${i}].plates=[];autosaveDraft();renderWorkout()">Clear</button></div>`;
+let eq=equipmentLabel(e);
+let plateEditor=`<div class="${eq==="Smith"?"plates":"hidden"}">${plateOpts.map(p=>`<button class="plate" onclick="entries[${i}].plates.push(${p});autosaveDraft();renderWorkout()">+${p}</button>`).join("")}</div><div class="row"><input value="${ptxt(e.plates)}" onchange="entries[${i}].plates=this.value.split(/[, +]+/).map(Number).filter(n=>!isNaN(n));autosaveDraft();renderWorkout()"><button class="btn secondary" onclick="entries[${i}].plates=[];autosaveDraft();renderWorkout()">Clear</button></div>`;
 return `<div class="exercise">
   <div class="exhead">
-    <div>
-      <input class="title" value="${e.name}" onchange="entries[${i}].name=this.value;autosaveDraft()">
+    <div style="flex:1">
+      <input class="title" value="${e.name}" onchange="entries[${i}].name=this.value;autosaveDraft();saveExerciseChangesToSplit()">
       <div>
         <span class="pill">${e.sets}×${e.min}-${e.max}</span>
-        <span class="pill">${e.smith?"Smith + "+state.settings.bar:"Manual"}</span>
+        <span class="pill">${eq}${eq==="Smith"?" + "+state.settings.bar:""}</span>
         <span class="pill">${prog.complete}/${e.sets} sets done</span>
       </div>
     </div>
-    <button class="btn secondary smallbtn" onclick="toggleSmith(${i})">${e.smith?"Smith":"Manual"}</button>
+    <button class="btn danger smallbtn" onclick="deleteExercise(${i})">Delete</button>
   </div>
+
+  <div class="row" style="grid-template-columns:1fr 1fr">
+    <button class="btn secondary smallbtn" onclick="setEquipment(${i},'Smith')">Smith</button>
+    <button class="btn secondary smallbtn" onclick="setEquipment(${i},'Cable')">Cable</button>
+  </div>
+  <div class="row" style="grid-template-columns:1fr 1fr">
+    <button class="btn secondary smallbtn" onclick="setEquipment(${i},'Machine')">Machine</button>
+    <button class="btn secondary smallbtn" onclick="setEquipment(${i},'Free Weights')">Free Weights</button>
+  </div>
+
+  <div class="actions">
+    <button class="btn secondary smallbtn" onclick="moveExercise(${i},-1)">↑ Move Up</button>
+    <button class="btn secondary smallbtn" onclick="moveExercise(${i},1)">↓ Move Down</button>
+    <button class="btn secondary smallbtn" onclick="editSetScheme(${i})">Edit Sets/Reps</button>
+  </div>
+
   <div class="weightCollapsed">
     <div>
-      <b>${e.smith?ptxt(e.plates)+" per side":"Working weight"}</b>
-      <div class="mini">${total(e.plates,e.smith)||"—"} lb total</div>
+      <b>${eq==="Smith"?ptxt(e.plates)+" per side":(eq==="Free Weights"?"Free weight / bodyweight":eq+" weight")}</b>
+      <div class="mini">${total(e.plates,eq==="Smith")||"—"} lb total</div>
     </div>
     <button class="btn secondary smallbtn" onclick="toggleWeightEditor(${i})">${weightEditor?"Done":"Edit Weight"}</button>
   </div>
+
   <div class="${weightEditor?"":"hidden"}">
-    <div class="mini">${e.smith?"Tap plates for ONE SIDE. App doubles plates and adds Smith resistance.":"Manual/cable/machine total weight."}</div>
+    <div class="mini">${eq==="Smith"?"Tap plates for ONE SIDE. App doubles plates and adds Smith resistance.":(eq==="Free Weights"?"Enter dumbbell weight each hand, total barbell weight, kettlebell weight, or 0 for bodyweight.":"Enter total stack/machine weight.")}</div>
     ${plateEditor}
   </div>
+
   <div class="coachBox"><b>Coach prediction:</b><br>${coachPrediction(e)}</div>
   <div class="barwrap"><div class="barfill" style="width:${pct}%"></div></div>
   ${Array.from({length:e.sets}).map((_,s)=>{
     let val=e.reps[s]||"", done=Number(val)>0;
     return `<div class="sets ${done?"completeSet":""}">
       <b>${done?"✓":"□"} Set ${s+1}</b>
-      <input type="number" value="${val}" onchange="entries[${i}].reps[${s}]=this.value;autosaveDraft();if(this.value)startTimer(timerFor(entries[${i}]));renderWorkout()" placeholder="${total(e.plates,e.smith)||""} lb reps">
+      <input type="number" value="${val}" onchange="entries[${i}].reps[${s}]=this.value;autosaveDraft();if(this.value)startTimer(timerFor(entries[${i}]));renderWorkout()" placeholder="${total(e.plates,eq==="Smith")||""} lb reps">
     </div>`
   }).join("")}
   <textarea placeholder="Notes" onchange="entries[${i}].notes=this.value;autosaveDraft()">${e.notes||""}</textarea>
   <div class="rec ${rr[0]}">${rr[1]}</div>${targetBadge(e.name)}
-</div>`}).join("")}
-function toggleSmith(i){entries[i].smith=!entries[i].smith;autosaveDraft();renderWorkout()}
-function addExercise(){let e=ex("New Exercise",3,8,12,[],false,"accessory");e.reps=["","",""];entries.push(e);autosaveDraft();renderWorkout()}
+</div>`}).join("");
+saveExerciseChangesToSplit();
+}
+function toggleSmith(i){setEquipment(i, equipmentLabel(entries[i])==='Smith'?'Cable':'Smith')}
+function addExercise(){let e=ex("New Exercise",3,8,12,[0],false,"free");e.equipment="Free Weights";e.reps=["","",""];e.editingWeight=true;entries.push(e);autosaveDraft();renderWorkout();saveExerciseChangesToSplit()}
 function autosaveDraft(){if(!entries)return;state.draft={savedAt:new Date().toISOString(),activeDay,entries,cardio:{type:ctype?.value||"Stairmaster",time:ctime?.value||"",distance:cdist?.value||"",level:clevel?.value||""},notes:notes?.value||""};save();if(document.getElementById("autosaveStatus"))autosaveStatus.textContent="Autosaved "+new Date().toLocaleTimeString([], {hour:"numeric",minute:"2-digit"})}
 function restoreDraft(){let d=state.draft;if(!d)return;activeDay=d.activeDay;entries=d.entries||[];wtitle.textContent=`Day ${activeDay+1}: ${state.split[activeDay].name}`;wsub.textContent="Restored unfinished workout.";ctype.value=d.cardio?.type||"Stairmaster";ctime.value=d.cardio?.time||"";cdist.value=d.cardio?.distance||"";clevel.value=d.cardio?.level||"";notes.value=d.notes||"";renderWorkout();show("workout")}
 function wireAutosave(){document.addEventListener("visibilitychange",()=>{if(document.hidden&&document.getElementById("workout").classList.contains("active"))autosaveDraft()});window.addEventListener("pagehide",autosaveDraft);window.addEventListener("beforeunload",autosaveDraft)}
