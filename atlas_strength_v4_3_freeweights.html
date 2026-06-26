@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>Atlas Strength v4.3.3</title>
+<meta name="theme-color" content="#080b12">
+<style>
+:root{--bg:#070a12;--card:#111a2b;--card2:#18243a;--ink:#f8fbff;--muted:#9fb0c7;--line:rgba(255,255,255,.13);--blue:#0ea5e9;--purple:#8b5cf6;--green:#22c55e;--yellow:#f59e0b;--red:#ef4444}
+*{box-sizing:border-box}html,body{margin:0;background:radial-gradient(circle at 50% 0%,#16213a 0%,#080b12 43%,#05070b 100%);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif}body{padding-bottom:92px}.app{max-width:820px;margin:auto;padding:16px}.header{position:sticky;top:0;z-index:20;margin:-16px -16px 16px;padding:18px 16px;background:rgba(7,10,18,.95);backdrop-filter:blur(18px);border-bottom:1px solid var(--line)}.top{display:flex;justify-content:space-between;align-items:center;gap:12px}h1{font-size:28px;line-height:1;margin:0;letter-spacing:-.8px}h2{font-size:30px;margin:22px 0 14px}h3{font-size:20px;margin:0 0 12px}.sub,.mini,.label{color:var(--muted)}.sub{font-size:14px;margin-top:6px}.mini{font-size:13px;line-height:1.45}.label{font-size:12px;margin-top:4px}.badge{border:1px solid var(--line);background:rgba(255,255,255,.06);border-radius:999px;padding:9px 13px;font-weight:800;color:#dbeafe}.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.card{background:linear-gradient(180deg,var(--card2),var(--card));border:1px solid var(--line);border-radius:24px;padding:16px;box-shadow:0 18px 48px rgba(0,0,0,.32)}.wide{grid-column:1/-1}.metric{font-size:32px;font-weight:950;letter-spacing:-.8px}.day{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:14px;border:1px solid var(--line);border-radius:22px;margin:10px 0;background:linear-gradient(135deg,rgba(139,92,246,.22),rgba(14,165,233,.10))}.day b{display:block;font-size:18px}.day span{display:block;color:var(--muted);font-size:13px;margin-top:4px}button,input,select,textarea{font:inherit}.btn{border:0;border-radius:16px;padding:12px 14px;background:linear-gradient(135deg,var(--purple),var(--blue));color:white;font-weight:900}.btn.secondary{background:rgba(255,255,255,.07);border:1px solid var(--line)}.btn.danger{background:rgba(239,68,68,.14);border:1px solid rgba(239,68,68,.35);color:#ffd4d4}input,select,textarea{width:100%;background:#07111e;border:1px solid var(--line);border-radius:16px;color:var(--ink);padding:12px;outline:none}textarea{min-height:78px}.row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:10px 0}.row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin:10px 0}.tabs{position:fixed;bottom:0;left:0;right:0;z-index:50;background:rgba(7,10,18,.95);backdrop-filter:blur(18px);border-top:1px solid var(--line);display:flex;gap:7px;padding:9px 10px calc(9px + env(safe-area-inset-bottom))}.tab{flex:1;border:1px solid var(--line);background:rgba(255,255,255,.045);color:var(--muted);border-radius:17px;padding:10px 4px;font-size:12px;font-weight:800}.tab.active{background:linear-gradient(135deg,var(--purple),var(--blue));color:white;border:0}.screen{display:none}.screen.active{display:block}.exercise{background:rgba(255,255,255,.045);border:1px solid var(--line);border-radius:22px;padding:14px;margin:12px 0}.exhead{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}.title{font-size:19px;font-weight:950;background:transparent;border:0;padding:0}.pill{display:inline-block;border:1px solid var(--line);background:rgba(255,255,255,.06);border-radius:999px;padding:6px 9px;margin:5px 4px 1px 0;color:#dbeafe;font-size:12px}.divider{height:1px;background:var(--line);margin:14px 0}.sets{display:grid;grid-template-columns:46px 1fr;gap:8px;align-items:center;margin:8px 0}.sets b{font-size:12px;color:var(--muted)}.plates{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin:8px 0}.plate{background:#08111d;border:1px solid var(--line);border-radius:14px;padding:10px 0;color:#fff;font-weight:950}.rec{border-radius:16px;padding:11px;margin-top:10px;font-size:13px;background:rgba(245,158,11,.10);border:1px solid rgba(245,158,11,.28);color:#fff1c8}.rec.good{background:rgba(34,197,94,.10);border-color:rgba(34,197,94,.3);color:#ddffe9}.rec.bad{background:rgba(239,68,68,.10);border-color:rgba(239,68,68,.3);color:#ffd7d7}.item{padding:13px 0;border-bottom:1px solid var(--line)}.item:last-child{border-bottom:0}.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.barwrap{height:12px;background:rgba(255,255,255,.08);border-radius:999px;overflow:hidden;margin-top:8px}.barfill{height:100%;background:linear-gradient(90deg,var(--purple),var(--blue));border-radius:999px}.chart{display:flex;align-items:flex-end;gap:6px;height:120px;border-bottom:1px solid var(--line);padding-top:18px}.col{flex:1;background:linear-gradient(180deg,var(--blue),var(--purple));border-radius:8px 8px 0 0;min-height:4px}.hidden{display:none}.smallbtn{padding:8px 10px;border-radius:12px;font-size:12px}@media(max-width:430px){h1{font-size:26px}h2{font-size:28px}.metric{font-size:30px}.app{padding:14px}.header{margin:-14px -14px 14px}.row{grid-template-columns:1fr 1fr}.tab{font-size:11px}}
+
+.completeSet{border-color:rgba(34,197,94,.42)!important;background:rgba(34,197,94,.08)!important}
+.check{font-size:20px;font-weight:950;color:var(--green)}
+.timerBox{position:fixed;left:16px;right:16px;bottom:88px;z-index:80;max-width:780px;margin:auto;background:linear-gradient(135deg,rgba(139,92,246,.96),rgba(14,165,233,.96));border-radius:22px;padding:14px 16px;color:white;box-shadow:0 18px 48px rgba(0,0,0,.45);display:none;align-items:center;justify-content:space-between;gap:10px}
+.timerBox.active{display:flex}
+.timerTime{font-size:28px;font-weight:950}
+.weightCollapsed{display:flex;align-items:center;justify-content:space-between;gap:10px;background:#07111e;border:1px solid var(--line);border-radius:18px;padding:12px;margin:10px 0}
+.coachBox{border-radius:16px;padding:11px;margin-top:10px;background:rgba(14,165,233,.10);border:1px solid rgba(14,165,233,.28);color:#dff6ff;font-size:13px}
+
+</style>
+</head>
+<body>
+<div class="app">
+<div class="header"><div class="top"><div><h1>Atlas Strength v4.3.3</h1><div class="sub">PF Smith / Cable / Machine / Free Weights</div></div><div class="badge" id="badge">Day 1 / 8</div></div></div>
+
+<section id="home" class="screen active">
+<div id="draftCard"></div>
+<div class="card wide"><h3>Today's Mission</h3><div id="mission"></div><div class="actions"><button class="btn" onclick="openDay(state.currentDay)">🔥 Start Workout</button><button class="btn secondary" onclick="nextDay()">Skip / Next Day</button></div></div>
+<div class="grid" style="margin-top:12px">
+<div class="card"><div class="metric" id="done">0</div><div class="label">Workouts</div></div>
+<div class="card"><div class="metric" id="recovery">🟢</div><div class="label" id="recoveryText">Recovered</div></div>
+<div class="card"><div class="metric" id="weightNow">—</div><div class="label">Current weight</div></div>
+<div class="card"><div class="metric" id="lastCardio">—</div><div class="label">Last cardio</div></div>
+</div>
+<h2>8-Day Split</h2><div id="days"></div>
+</section>
+
+<section id="workout" class="screen">
+<div class="card wide"><div class="top"><div><h2 id="wtitle" style="margin:0"></h2><div class="mini" id="wsub"></div><div class="mini" id="autosaveStatus">Autosave ready.</div></div><button class="btn secondary" onclick="show('home')">Back</button></div><div class="divider"></div><div class="rec"><b>Workout editor:</b> Edit names directly, change equipment type, move exercises, delete exercises, or edit sets/reps. Changes save as your new workout layout.</div><div id="exlist"></div>
+<h3>Cardio Finisher</h3><div class="row"><select id="ctype"><option>Stairmaster</option><option>Run</option><option>Walk</option><option>Bike</option><option>None</option></select><input id="ctime" type="number" placeholder="Minutes"></div><div class="row"><input id="cdist" placeholder="Miles / floors"><input id="clevel" placeholder="Level / pace"></div><textarea id="notes" placeholder="Workout notes"></textarea><div class="actions"><button class="btn" onclick="saveWorkout()">Save Workout</button><button class="btn secondary" onclick="addExercise()">Add Custom</button><button class="btn secondary" onclick="addFromLibrary()">Exercise Library</button></div></div>
+</section>
+
+<section id="progress" class="screen">
+<h2>Progress</h2>
+<div class="card wide"><h3>Strength Dashboard</h3><div id="bigLifts"></div></div>
+<div class="card wide" style="margin-top:12px"><h3>Exercise Detail</h3><select id="exercisePick" onchange="renderExerciseDetail()"></select><div id="exerciseDetail" class="mini"></div></div>
+<div class="card wide" style="margin-top:12px"><h3>Achievements</h3><div id="achievements" class="mini"></div></div>
+</section>
+
+<section id="history" class="screen">
+<h2>Reports</h2>
+<div class="card wide"><h3>Weekly Report</h3><div id="weeklyReport"></div></div>
+<div class="card wide" style="margin-top:12px"><h3>Monthly Report</h3><div id="monthlyReport"></div></div>
+<div class="card wide" style="margin-top:12px"><h3>Workout History</h3><div id="hlist"></div></div>
+</section>
+
+<section id="nutrition" class="screen">
+<h2>Nutrition</h2>
+<div class="card wide"><h3>Bodyweight</h3><div class="row"><input id="bodyWeightInput" type="number" placeholder="Today's bodyweight"><button class="btn" onclick="saveBodyWeight()">Save Weight</button></div><div id="bodyWeightSummary" class="mini">No weigh-ins yet.</div><div id="weightChart" class="chart"></div>
+<div class="divider"></div><h3>Progress Photos</h3><input id="photoNote" placeholder="Photo note / description"><button class="btn secondary" style="margin-top:8px" onclick="savePhotoNote()">Save Photo Note</button><div id="photoList" class="mini">No photo notes yet.</div>
+<div class="divider"></div><h3>Macros Remaining</h3><div id="macroCards" class="grid"></div>
+<div class="divider"></div><h3>Log Meal</h3><input id="mealName" placeholder="Meal name"><div class="row"><input id="mealProtein" type="number" placeholder="Protein g"><input id="mealFat" type="number" placeholder="Fat g"></div><div class="row"><input id="mealCarbs" type="number" placeholder="Carbs g"><input id="mealCalories" type="number" placeholder="Calories"></div><button class="btn" onclick="saveMeal()">Save Meal</button><div class="divider"></div><h3>Today</h3><div id="mealList" class="mini">No meals logged today.</div></div>
+</section>
+
+
+<section id="summary" class="screen">
+<h2>Workout Complete</h2>
+<div class="card wide">
+  <h3 id="summaryTitle">Day Complete</h3>
+  <div id="summaryBody"></div>
+  <div class="actions">
+    <button class="btn" onclick="show('home')">Back Home</button>
+    <button class="btn secondary" onclick="show('progress')">View Progress</button>
+  </div>
+</div>
+</section>
+
+<section id="settings" class="screen">
+<h2>Settings</h2>
+<div class="card wide"><h3>Smith Machine</h3><div class="row"><div><div class="label">Smith resistance</div><input id="bar" type="number"></div><div><div class="label">Default add per side</div><input id="jump" type="number"></div></div><button class="btn" onclick="saveSettings()">Save Settings</button><div class="divider"></div><h3>Goals</h3><div class="row"><input id="goalBench" type="number" placeholder="Bench goal"><input id="goalSquat" type="number" placeholder="Squat goal"></div><div class="row"><input id="goalDeadlift" type="number" placeholder="Deadlift goal"><input id="goalOHP" type="number" placeholder="OHP goal"></div><button class="btn secondary" onclick="saveGoals()">Save Goals</button>
+<div class="divider"></div>
+<h3>Returning After Layoff</h3>
+<div class="mini">Use this after time away from the gym. It reduces targets so you can rebuild safely without ego-lifting on day one.</div>
+<div class="row">
+  <div><div class="label">Reduction percent</div><input id="layoffPercent" type="number" placeholder="25"></div>
+  <div><div class="label">Ramp weeks</div><input id="layoffWeeks" type="number" placeholder="3"></div>
+</div>
+<div class="actions">
+  <button class="btn" onclick="enableLayoffMode()">Enable Layoff Mode</button>
+  <button class="btn secondary" onclick="disableLayoffMode()">Disable</button>
+</div>
+<div class="mini" id="layoffStatus">Layoff mode inactive.</div>
+
+<div class="divider"></div><h3>Backup</h3><div class="actions"><button class="btn secondary" onclick="exportData()">Export Data</button><button class="btn secondary" onclick="state.coaching={};save();render();alert('Coaching reset.')">Reset Coaching</button><button class="btn danger" onclick="resetData()">Reset App</button></div><textarea id="exportBox" placeholder="Export appears here"></textarea></div>
+</section>
+</div>
+
+<div class="timerBox" id="timerBox">
+  <div><div class="mini" style="color:white;opacity:.85">Rest timer</div><div class="timerTime" id="timerTime">2:00</div></div>
+  <div class="actions" style="margin:0"><button class="btn secondary" onclick="stopTimer()">Stop</button></div>
+</div>
+
+<nav class="tabs"><button class="tab active" onclick="show('home',this)">Home</button><button class="tab" onclick="show('progress',this)">Progress</button><button class="tab" onclick="show('history',this)">Reports</button><button class="tab" onclick="show('nutrition',this)">Nutrition</button><button class="tab" onclick="show('settings',this)">Settings</button></nav>
+
+<script>
+function ex(name,sets,min,max,plates,smith,type){return{id:Math.random().toString(36).slice(2),name,sets,min,max,plates,smith,type}}
+const baseSplit=[
+{name:"Quad-Dominant Leg Day",rest:false,exercises:[ex("Squat",4,8,10,[45,25],true,"compound"),ex("Leg Press",4,8,10,[260],false,"compound"),ex("Bulgarian Split Squat",3,10,12,[],false,"accessory"),ex("Leg Extension",4,12,15,[30],false,"isolation"),ex("Calf Raise",4,15,20,[100],false,"isolation")]},
+{name:"Chest with Triceps",rest:false,exercises:[ex("Bench Press",4,8,10,[45,10],true,"compound"),ex("Incline Dumbbell Press",4,10,12,[25],false,"accessory"),ex("Cable Chest Fly",3,12,15,[80],false,"isolation"),ex("Triceps Press",3,10,12,[100],false,"isolation"),ex("Tricep Pushdown",4,12,15,[50],false,"isolation")]},
+{name:"Back with Biceps",rest:false,exercises:[ex("Deadlift",4,6,8,[45,45,25],true,"compound"),ex("Barbell Row",4,8,10,[45],true,"compound"),ex("Lat Pulldown",4,10,12,[85],false,"accessory"),ex("Seated Cable Row",3,10,12,[105],false,"accessory"),ex("Biceps Curl",3,12,15,[40],false,"isolation")]},
+{name:"Rest",rest:true,exercises:[]},
+{name:"Shoulders with Chest",rest:false,exercises:[ex("Overhead Press",4,8,10,[80],true,"compound"),ex("Lateral Raise",4,12,15,[15],false,"isolation"),ex("Rear Delt Fly",4,12,15,[90],false,"isolation"),ex("Seated Chest Press",3,10,12,[130],false,"accessory"),ex("Cable Lateral Raise",3,12,15,[5],false,"isolation")]},
+{name:"Hamstrings with Back",rest:false,exercises:[ex("Romanian Deadlift",4,8,10,[45,25,10],true,"compound"),ex("Hamstring Curl",4,12,15,[80],false,"isolation"),ex("Lunge",3,10,12,[20],false,"accessory"),ex("Lat Pulldown Machine",3,8,10,[100],false,"accessory"),ex("T-Bar Row",3,10,12,[100],false,"accessory")]},
+{name:"Arms",rest:false,exercises:[ex("Barbell Curl",4,8,10,[60],false,"isolation"),ex("Incline Dumbbell Curl",3,8,12,[20],false,"isolation"),ex("Hammer Curl",3,8,12,[20],false,"isolation"),ex("Skull Crusher",4,10,12,[60],false,"isolation"),ex("Overhead Cable Extension",3,12,15,[25,25,25],false,"isolation"),ex("Preacher Curl",3,12,15,[60],false,"isolation"),ex("Cable Pushdown",3,12,15,[45],false,"isolation")]},
+{name:"Rest",rest:true,exercises:[]}
+];
+const plateOpts=[45,35,25,10,5,2.5];
+let state=JSON.parse(localStorage.getItem("atlasV3")||"null")||{split:baseSplit,logs:[],currentDay:0,settings:{bar:25,jump:5},coaching:{},draft:null,nutrition:{targets:{protein:220,fat:80,carbs:180,calories:2380},meals:[]},bodyweights:[],photoNotes:[],goals:{bench:225,squat:315,deadlift:405,ohp:135}};
+let activeDay=0, entries=[];
+function save(){localStorage.setItem("atlasV3",JSON.stringify(state))}
+function ensure(){state.split??=baseSplit;state.logs??=[];state.settings??={bar:25,jump:5};state.coaching??={};state.nutrition??={targets:{protein:220,fat:80,carbs:180,calories:2380},meals:[]};state.bodyweights??=[];state.photoNotes??=[];state.goals??={bench:225,squat:315,deadlift:405,ohp:135};state.layoffMode??={active:false,percent:25,weeks:3,workoutsCompleted:0}}
+function total(a,smith){a=(a||[]).map(Number).filter(n=>!isNaN(n));return smith?a.reduce((x,y)=>x+y,0)*2+Number(state.settings.bar||25):(a.length==1?a[0]:a.reduce((x,y)=>x+y,0))}
+function ptxt(a){return a&&a.length?a.join(" + "):"manual/bodyweight"}
+function e1rm(w,r){return Math.round(w*(1+r/30))}
+function vol(w,reps){return w*(reps||[]).reduce((a,b)=>a+Number(b||0),0)}
+function logsFor(n){return state.logs.flatMap(l=>(l.entries||[]).map(e=>({...e,date:l.date,day:l.dayName}))).filter(e=>e.name===n)}
+function best(n){let a=logsFor(n);return a.length?a.sort((x,y)=>(y.e1rm||0)-(x.e1rm||0)||(y.volume||0)-(x.volume||0))[0]:null}
+function template(name){return state.split.flatMap(d=>d.exercises).find(e=>e.name===name)}
+function todayKey(){return new Date().toISOString().slice(0,10)}
+function show(id,btn){document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));document.getElementById(id).classList.add("active");if(btn){document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));btn.classList.add("active")}render()}
+function rec(t,e){e=e||t;let reps=e.reps||[],top=Number(e.max||t.max),min=Number(e.min||t.min),sets=Number(e.sets||t.sets),w=total(e.plates??t.plates,e.smith??t.smith),hit=reps.length>=sets&&reps.slice(0,sets).every(r=>Number(r)>=top),fail=reps.length>=sets&&reps.slice(0,sets).filter(r=>Number(r)<min).length>=2,j=(e.type||t.type)==="compound"?Number(state.settings.jump||5):(w<50?2.5:5);if(hit)return["good",e.smith?`Ready to move up: add ${j} lb per side next time.`:`Ready to move up: next target ${Math.round(w+j)} lb.`];if(fail)return["bad","Struggling below range. If this happens repeatedly, app will deload."];return["",`Target: ${sets} sets of ${min}-${top}. Increase only after hitting ${top}s across.`]}
+function render(){
+badge.textContent=`Day ${state.currentDay+1} / 8`;
+done.textContent=state.logs.length;
+let d=state.split[state.currentDay];
+mission.innerHTML=layoffCoachMessage() + (d.rest?`<div class="metric" style="font-size:24px">${d.name}</div><div class="mini">Recovery, mobility, walking, or nothing. Let the work settle.</div>`:`<div class="metric" style="font-size:24px">${d.name}</div>`+d.exercises.slice(0,4).map(e=>`<div class="item"><b>${e.name}</b><div class="mini">Target: ${total(e.plates,e.smith)||"—"} lb • ${e.sets}×${e.min}-${e.max}${e.smith?" • "+ptxt(e.plates)+" per side":""}</div></div>`).join(""));
+days.innerHTML=state.split.map((d,i)=>`<div class="day" onclick="openDay(${i})"><div><b>Day ${i+1}: ${d.name}</b><span>${d.rest?"Rest":d.exercises.length+" exercises"} • ${i===state.currentDay?"Current":"Tap to open"}</span></div><button class="btn secondary">${d.rest?"View":"Start"}</button></div>`).join("");
+let lc=state.logs.at(-1)?.cardio;lastCardio.textContent=lc&&lc.type!="None"?`${lc.type} ${lc.time||0}m`:"—";
+let bw=state.bodyweights;weightNow.textContent=bw.length?bw.at(-1).weight:"—";
+let r=recoveryScore();recovery.textContent=r.icon;recoveryText.textContent=r.text;
+draftCard.innerHTML=state.draft?`<div class="card wide" style="margin-bottom:12px"><h3>Unfinished Workout Saved</h3><div class="mini">Autosaved ${new Date(state.draft.savedAt).toLocaleString()}</div><div class="actions"><button class="btn" onclick="restoreDraft()">Resume Workout</button><button class="btn danger" onclick="state.draft=null;save();render()">Discard</button></div></div>`:"";
+renderProgress();renderReports();renderNutrition();renderSettings();
+}
+function recoveryScore(){let recent=state.logs.slice(-4);let meals=(state.nutrition.meals||[]).filter(m=>m.date===todayKey());let cal=meals.reduce((a,m)=>a+Number(m.calories||0),0);let protein=meals.reduce((a,m)=>a+Number(m.protein||0),0);let flags=0;if(recent.length>=4)flags++;if(cal&&cal<state.nutrition.targets.calories*.8)flags++;if(protein&&protein<state.nutrition.targets.protein*.75)flags++;let del=Object.values(state.coaching||{}).filter(c=>c.status==="deload").length;if(del)flags++;if(flags>=2)return{icon:"🔴",text:"Deload watch"};if(flags===1)return{icon:"🟡",text:"Watch recovery"};return{icon:"🟢",text:"Recovered"}}
+function openDay(i){activeDay=i;let d=state.split[i];wtitle.textContent=`Day ${i+1}: ${d.name}`;wsub.textContent=d.rest?"Rest day. You can save cardio or notes.":"Fast log: weights are prefilled, just enter reps.";entries=d.exercises.map(t=>({...t,plates:[...(t.plates||[])],reps:Array(t.sets).fill(""),notes:"",editingWeight:false,equipment:t.equipment||(t.smith?"Smith":(t.type==="machine"?"Machine":((t.type==="free"||t.type==="bodyweight")?"Free Weights":"Cable")))}));ctype.value="Stairmaster";ctime.value="";cdist.value="";clevel.value="";notes.value="";renderWorkout();show("workout");autosaveDraft()}
+
+let timerInterval=null, timerEnd=0, lastSummary=null;
+function progressForExercise(e){
+  let reps=(e.reps||[]).map(x=>Number(x||0));
+  let complete=reps.filter(r=>r>0).length;
+  let hitTop=reps.filter(r=>r>=Number(e.max||0)).length;
+  return {complete, hitTop, sets:Number(e.sets||0)};
+}
+function coachPrediction(e){
+  let w=total(e.plates,e.smith), j=(e.type==="compound"?Number(state.settings.jump||5):(w<50?2.5:5));
+  if(e.smith){
+    let np=[...(e.plates||[]),j];
+    return `If you hit ${e.max} reps on all ${e.sets} sets: next workout becomes ${ptxt(np)} per side = ${total(np,true)} lb. If not, stay at ${w} lb.`;
+  }
+  return `If you hit ${e.max} reps on all ${e.sets} sets: next workout becomes ${Math.round(w+j)} lb. If not, stay at ${w} lb.`;
+}
+function toggleWeightEditor(i){
+  entries[i].editingWeight=!entries[i].editingWeight;
+  renderWorkout();
+}
+function startTimer(seconds){
+  timerEnd=Date.now()+seconds*1000;
+  timerBox.classList.add("active");
+  clearInterval(timerInterval);
+  timerInterval=setInterval(updateTimer,250);
+  updateTimer();
+}
+function updateTimer(){
+  let left=Math.max(0,Math.ceil((timerEnd-Date.now())/1000));
+  let m=Math.floor(left/60),s=String(left%60).padStart(2,"0");
+  timerTime.textContent=`${m}:${s}`;
+  if(left<=0){
+    clearInterval(timerInterval);
+    timerBox.classList.remove("active");
+    if(navigator.vibrate) navigator.vibrate([300,150,300]);
+    alert("Rest time done.");
+  }
+}
+function stopTimer(){clearInterval(timerInterval);timerBox.classList.remove("active")}
+function timerFor(e){return e.type==="compound"?120:90}
+function summaryScreen(savedLog){
+  let entries=savedLog.entries||[];
+  let volume=entries.reduce((a,e)=>a+(e.volume||0),0);
+  let prs=entries.filter(e=>{
+    let prev=logsFor(e.name).filter(x=>x.date!==savedLog.date);
+    return !prev.length || e.e1rm>Math.max(...prev.map(x=>x.e1rm||0));
+  });
+  let updates=entries.map(e=>state.coaching[e.name]).filter(Boolean);
+  let next=state.split[state.currentDay]?.name||"Next workout";
+  summaryTitle.textContent=savedLog.dayName+" Complete";
+  summaryBody.innerHTML=`
+    <div class="grid">
+      <div class="card"><div class="metric">${Math.round(volume).toLocaleString()}</div><div class="label">Workout volume</div></div>
+      <div class="card"><div class="metric">${prs.length}</div><div class="label">New PRs</div></div>
+      <div class="card"><div class="metric">${savedLog.cardio.type==="None"?"—":savedLog.cardio.time||"—"}</div><div class="label">${savedLog.cardio.type} minutes</div></div>
+      <div class="card"><div class="metric">${recoveryScore().icon}</div><div class="label">${recoveryScore().text}</div></div>
+    </div>
+    <div class="divider"></div>
+    <h3>Coach Updates</h3>
+    ${updates.length?updates.map(u=>`<div class="item"><b>${u.status==="increase"?"⬆ Increase":u.status==="deload"?"⚠ Deload":"➡ Stay"}</b><div class="mini">${u.smith?ptxt(u.plates)+" per side = ":""}${u.total} lb • ${u.reason}</div></div>`).join(""):"No updates."}
+    <div class="divider"></div>
+    <h3>Next Workout</h3>
+    <div class="mini">${next}</div>
+  `;
+  show("summary");
+}
+
+
+
+const exerciseLibrary=[
+  {name:"Dumbbell Bench Press",equipment:"Free Weights",type:"free",sets:3,min:8,max:12,plates:[25]},
+  {name:"Dumbbell Curl",equipment:"Free Weights",type:"free",sets:3,min:10,max:12,plates:[20]},
+  {name:"Bodyweight Push-Up",equipment:"Free Weights",type:"bodyweight",sets:3,min:10,max:20,plates:[0]},
+  {name:"Goblet Squat",equipment:"Free Weights",type:"free",sets:3,min:10,max:12,plates:[25]},
+  {name:"Cable Tricep Pushdown",equipment:"Cable",type:"cable",sets:3,min:12,max:15,plates:[50]},
+  {name:"Cable Row",equipment:"Cable",type:"cable",sets:3,min:10,max:12,plates:[80]},
+  {name:"Machine Chest Press",equipment:"Machine",type:"machine",sets:3,min:10,max:12,plates:[100]},
+  {name:"Machine Shoulder Press",equipment:"Machine",type:"machine",sets:3,min:10,max:12,plates:[80]}
+];
+function addFromLibrary(){
+  let list=exerciseLibrary.map((e,idx)=>`${idx+1}. ${e.name} (${e.equipment})`).join("\n");
+  let choice=Number(prompt("Add exercise number:\n\n"+list));
+  if(!choice || !exerciseLibrary[choice-1]) return;
+  let lib=exerciseLibrary[choice-1];
+  let e={...lib,id:Math.random().toString(36).slice(2),smith:lib.equipment==="Smith",reps:Array(lib.sets).fill(""),notes:"",editingWeight:false};
+  entries.push(e);
+  autosaveDraft();saveExerciseChangesToSplit();renderWorkout();
+}
+
+function equipmentLabel(e){
+  if(e.equipment) return e.equipment;
+  if(e.smith) return "Smith";
+  if(e.type==="machine") return "Machine";
+  if(e.type==="free") return "Free Weights";
+  if(e.type==="bodyweight") return "Free Weights";
+  return "Cable";
+}
+function setEquipment(i,val){
+  entries[i].equipment=val;
+  entries[i].smith=(val==="Smith");
+  if(val==="Cable") entries[i].type="cable";
+  if(val==="Machine") entries[i].type="machine";
+  if(val==="Free Weights") entries[i].type="free";
+  if(val==="Smith") entries[i].type=entries[i].type==="isolation"?"compound":entries[i].type;
+  autosaveDraft();
+  saveExerciseChangesToSplit();
+  renderWorkout();
+}
+function deleteExercise(i){
+  if(!confirm("Delete this exercise from this workout?")) return;
+  entries.splice(i,1);
+  autosaveDraft();
+  renderWorkout();
+}
+function moveExercise(i,dir){
+  let j=i+dir;
+  if(j<0 || j>=entries.length) return;
+  [entries[i],entries[j]]=[entries[j],entries[i]];
+  autosaveDraft();
+  renderWorkout();
+}
+function saveExerciseChangesToSplit(){
+  let d=state.split[activeDay];
+  if(!d || d.rest) return;
+  d.exercises=entries.map(e=>({
+    id:e.id||Math.random().toString(36).slice(2),
+    name:e.name,
+    sets:Number(e.sets||3),
+    min:Number(e.min||8),
+    max:Number(e.max||12),
+    plates:[...(e.plates||[])],
+    smith:equipmentLabel(e)==="Smith",
+    equipment:equipmentLabel(e),
+    type:e.type||equipmentLabel(e).toLowerCase()
+  }));
+  save();
+}
+function editSetScheme(i){
+  let sets=Number(prompt("Sets?", entries[i].sets)||entries[i].sets);
+  let min=Number(prompt("Minimum reps?", entries[i].min)||entries[i].min);
+  let max=Number(prompt("Maximum reps?", entries[i].max)||entries[i].max);
+  entries[i].sets=sets; entries[i].min=min; entries[i].max=max;
+  entries[i].reps=Array(sets).fill("");
+  autosaveDraft(); renderWorkout();
+}
+
+function renderWorkout(){
+let d=state.split[activeDay];
+if(d.rest){exlist.innerHTML='<div class="rec">Rest day. Save notes/cardio only.</div>';return}
+exlist.innerHTML=entries.map((e,i)=>{
+if(!e.equipment) e.equipment=e.smith?"Smith":(e.type==="machine"?"Machine":"Cable");
+let rr=rec(e,e), prog=progressForExercise(e), pct=e.sets?Math.round(prog.complete/e.sets*100):0;
+let weightEditor=e.editingWeight;
+let eq=equipmentLabel(e);
+let plateEditor=`<div class="${eq==="Smith"?"plates":"hidden"}">${plateOpts.map(p=>`<button class="plate" onclick="entries[${i}].plates.push(${p});autosaveDraft();renderWorkout()">+${p}</button>`).join("")}</div><div class="row"><input value="${ptxt(e.plates)}" onchange="entries[${i}].plates=this.value.split(/[, +]+/).map(Number).filter(n=>!isNaN(n));autosaveDraft();renderWorkout()"><button class="btn secondary" onclick="entries[${i}].plates=[];autosaveDraft();renderWorkout()">Clear</button></div>`;
+return `<div class="exercise">
+  <div class="exhead">
+    <div style="flex:1">
+      <input class="title" value="${e.name}" onchange="entries[${i}].name=this.value;autosaveDraft();saveExerciseChangesToSplit()">
+      <div>
+        <span class="pill">${e.sets}×${e.min}-${e.max}</span>
+        <span class="pill">${eq}${eq==="Smith"?" + "+state.settings.bar:""}</span>
+        <span class="pill">${prog.complete}/${e.sets} sets done</span>
+      </div>
+    </div>
+    <button class="btn danger smallbtn" onclick="deleteExercise(${i})">Delete</button>
+  </div>
+
+  <div class="row" style="grid-template-columns:1fr 1fr">
+    <button class="btn secondary smallbtn" onclick="setEquipment(${i},'Smith')">Smith</button>
+    <button class="btn secondary smallbtn" onclick="setEquipment(${i},'Cable')">Cable</button>
+  </div>
+  <div class="row" style="grid-template-columns:1fr 1fr">
+    <button class="btn secondary smallbtn" onclick="setEquipment(${i},'Machine')">Machine</button>
+    <button class="btn secondary smallbtn" onclick="setEquipment(${i},'Free Weights')">Free Weights</button>
+  </div>
+
+  <div class="actions">
+    <button class="btn secondary smallbtn" onclick="moveExercise(${i},-1)">↑ Move Up</button>
+    <button class="btn secondary smallbtn" onclick="moveExercise(${i},1)">↓ Move Down</button>
+    <button class="btn secondary smallbtn" onclick="editSetScheme(${i})">Edit Sets/Reps</button>
+  </div>
+
+  <div class="weightCollapsed">
+    <div>
+      <b>${eq==="Smith"?ptxt(e.plates)+" per side":(eq==="Free Weights"?"Free weight / bodyweight":eq+" weight")}</b>
+      <div class="mini">${total(e.plates,eq==="Smith")||"—"} lb total</div>
+    </div>
+    <button class="btn secondary smallbtn" onclick="toggleWeightEditor(${i})">${weightEditor?"Done":"Edit Weight"}</button>
+  </div>
+
+  <div class="${weightEditor?"":"hidden"}">
+    <div class="mini">${eq==="Smith"?"Tap plates for ONE SIDE. App doubles plates and adds Smith resistance.":(eq==="Free Weights"?"Enter dumbbell weight each hand, total barbell weight, kettlebell weight, or 0 for bodyweight.":"Enter total stack/machine weight.")}</div>
+    ${plateEditor}
+  </div>
+
+  <div class="coachBox"><b>Coach prediction:</b><br>${coachPrediction(e)}</div>
+  <div class="barwrap"><div class="barfill" style="width:${pct}%"></div></div>
+  ${Array.from({length:e.sets}).map((_,s)=>{
+    let val=e.reps[s]||"", done=Number(val)>0;
+    return `<div class="sets ${done?"completeSet":""}">
+      <b>${done?"✓":"□"} Set ${s+1}</b>
+      <input type="number" value="${val}" onchange="entries[${i}].reps[${s}]=this.value;autosaveDraft();if(this.value)startTimer(timerFor(entries[${i}]));renderWorkout()" placeholder="${total(e.plates,eq==="Smith")||""} lb reps">
+    </div>`
+  }).join("")}
+  <textarea placeholder="Notes" onchange="entries[${i}].notes=this.value;autosaveDraft()">${e.notes||""}</textarea>
+  <div class="rec ${rr[0]}">${rr[1]}</div>${targetBadge(e.name)}
+</div>`}).join("");
+saveExerciseChangesToSplit();
+}
+function toggleSmith(i){setEquipment(i, equipmentLabel(entries[i])==='Smith'?'Cable':'Smith')}
+function addExercise(){let e=ex("New Exercise",3,8,12,[0],false,"free");e.equipment="Free Weights";e.reps=["","",""];e.editingWeight=true;entries.push(e);autosaveDraft();renderWorkout();saveExerciseChangesToSplit()}
+function autosaveDraft(){if(!entries)return;state.draft={savedAt:new Date().toISOString(),activeDay,entries,cardio:{type:ctype?.value||"Stairmaster",time:ctime?.value||"",distance:cdist?.value||"",level:clevel?.value||""},notes:notes?.value||""};save();if(document.getElementById("autosaveStatus"))autosaveStatus.textContent="Autosaved "+new Date().toLocaleTimeString([], {hour:"numeric",minute:"2-digit"})}
+function restoreDraft(){let d=state.draft;if(!d)return;activeDay=d.activeDay;entries=d.entries||[];wtitle.textContent=`Day ${activeDay+1}: ${state.split[activeDay].name}`;wsub.textContent="Restored unfinished workout.";ctype.value=d.cardio?.type||"Stairmaster";ctime.value=d.cardio?.time||"";cdist.value=d.cardio?.distance||"";clevel.value=d.cardio?.level||"";notes.value=d.notes||"";renderWorkout();show("workout")}
+function wireAutosave(){document.addEventListener("visibilitychange",()=>{if(document.hidden&&document.getElementById("workout").classList.contains("active"))autosaveDraft()});window.addEventListener("pagehide",autosaveDraft);window.addEventListener("beforeunload",autosaveDraft)}
+function saveWorkout(){let d=state.split[activeDay];let out=entries.map(e=>{let w=total(e.plates,e.smith),br=Math.max(...(e.reps||[]).map(x=>Number(x||0)),0);return{...e,total:w,e1rm:e1rm(w,br),volume:vol(w,e.reps)}});let savedLog={date:new Date().toISOString(),dayIndex:activeDay,dayName:d.name,entries:out,cardio:{type:ctype.value,time:ctime.value,distance:cdist.value,level:clevel.value},notes:notes.value};state.logs.push(savedLog);applyCoaching(out);state.currentDay=(activeDay+1)%state.split.length;progressLayoffMode();state.draft=null;save();render();summaryScreen(savedLog)}
+function greedy(target){let out=[];for(let p of plateOpts){while(target>=p-.01){out.push(p);target-=p}}return out}
+function applyCoaching(out){out.forEach(e=>{let t=template(e.name);if(!t)return;let top=e.max||t.max,min=e.min||t.min,sets=e.sets||t.sets,reps=(e.reps||[]).map(Number),hit=reps.length>=sets&&reps.slice(0,sets).every(r=>r>=top),fail=reps.length>=sets&&reps.slice(0,sets).filter(r=>r<min).length>=2,past=logsFor(e.name).slice(-2),repeatFail=fail&&past.length>=2&&past.every(p=>(p.reps||[]).map(Number).slice(0,sets).filter(r=>r<min).length>=2),j=(e.type||t.type)==="compound"?Number(state.settings.jump||5):(e.total<50?2.5:5),next={status:"stay",plates:[...(e.plates||[])],total:e.total,smith:e.smith,reason:"Stay at current target."};if(hit){next.status="increase";if(e.smith){next.plates=[...(e.plates||[]),j];next.total=total(next.plates,true);next.reason=`Top reps hit. Added ${j} lb per side automatically.`}else{next.total=Math.round(e.total+j);next.plates=[next.total];next.reason=`Top reps hit. Increased to ${next.total} lb automatically.`}}else if(repeatFail && !(state.layoffMode?.active)){next.status="deload";if(e.smith){let side=(e.plates||[]).reduce((a,b)=>a+Number(b),0);next.plates=greedy(Math.max(0,side*.9));next.total=total(next.plates,true);next.reason="Repeated misses. Deloaded about 10% automatically."}else{next.total=Math.round(e.total*.9);next.plates=[next.total];next.reason="Repeated misses. Deloaded about 10% automatically."}}state.coaching[e.name]=next;t.plates=[...next.plates];t.smith=next.smith})}
+function targetBadge(name){let c=state.coaching[name];return c?`<div class="rec ${c.status==="increase"?"good":c.status==="deload"?"bad":""}"><b>Next target:</b> ${c.smith?ptxt(c.plates)+" per side = ":""}${c.total} lb<br>${c.reason}</div>`:""}
+function renderProgress(){let lifts=["Squat","Bench Press","Deadlift","Overhead Press"];bigLifts.innerHTML=lifts.map(n=>{let b=best(n),goal=n==="Bench Press"?state.goals.bench:n==="Squat"?state.goals.squat:n==="Deadlift"?state.goals.deadlift:state.goals.ohp,pr=b?.e1rm||0,pct=goal?Math.min(100,Math.round(pr/goal*100)):0;return`<div class="item"><b>${n}</b><div class="mini">Best est. 1RM: ${pr||"—"} lb • Goal: ${goal} lb</div><div class="barwrap"><div class="barfill" style="width:${pct}%"></div></div>${targetBadge(n)}</div>`}).join("");let names=[...new Set(state.split.flatMap(d=>d.exercises.map(e=>e.name)))];let old=exercisePick.value||names[0];exercisePick.innerHTML=names.map(n=>`<option ${n===old?"selected":""}>${n}</option>`).join("");renderExerciseDetail();renderAchievements()}
+function renderExerciseDetail(){let n=exercisePick.value,logs=logsFor(n);exerciseDetail.innerHTML=logs.length?logs.slice(-10).reverse().map(e=>`<div class="item"><b>${new Date(e.date).toLocaleDateString()}</b><div class="mini">${e.total||"—"} lb × ${(e.reps||[]).filter(Boolean).join("/")} • Est. 1RM ${e.e1rm||"—"} • Volume ${e.volume||0}</div></div>`).join(""):"No logs yet for this exercise."}
+function renderAchievements(){let total=state.logs.length,cardio=state.logs.filter(l=>l.cardio?.type&&l.cardio.type!="None").length,prCount=[...new Set(state.split.flatMap(d=>d.exercises.map(e=>e.name)))].filter(n=>logsFor(n).length).length;achievements.innerHTML=[total>=1?"✅ First workout":"⬜ First workout",total>=10?"✅ 10 workouts":"⬜ 10 workouts",total>=30?"✅ 30 workouts":"⬜ 30 workouts",cardio>=10?"✅ 10 cardio finishers":"⬜ 10 cardio finishers",prCount>=5?"✅ 5 exercises tracked":"⬜ 5 exercises tracked"].join("<br>")}
+
+function deleteWorkout(index){
+  let workout=state.logs[index];
+  if(!workout) return;
+  if(!confirm(`Delete ${workout.dayName} from ${new Date(workout.date).toLocaleDateString()}?`)) return;
+  state.logs.splice(index,1);
+  rebuildCoachingFromHistory();
+  save();
+  render();
+  alert("Workout deleted.");
+}
+function rebuildCoachingFromHistory(){
+  state.coaching={};
+  // Reset split back to original defaults, then replay logs to rebuild coaching targets.
+  state.split=JSON.parse(JSON.stringify(baseSplit));
+  let oldLogs=[...state.logs];
+  state.logs=[];
+  oldLogs.forEach(l=>{
+    state.logs.push(l);
+    applyCoaching(l.entries||[]);
+  });
+}
+
+function renderReports(){let recent=state.logs.slice(-6),month=state.logs.slice(-24);function report(arr){let v=arr.reduce((a,l)=>a+l.entries.reduce((x,e)=>x+(e.volume||0),0),0),c=arr.filter(l=>l.cardio?.type&&l.cardio.type!="None").length,inc=Object.values(state.coaching).filter(x=>x.status==="increase").length,del=Object.values(state.coaching).filter(x=>x.status==="deload").length;return`<div class="mini">${arr.length} workouts • ${Math.round(v).toLocaleString()} lb volume • ${c} cardio finishers • ${inc} increases ready • ${del} deload flags</div>`}weeklyReport.innerHTML=report(recent);monthlyReport.innerHTML=report(month);hlist.innerHTML=state.logs.length?state.logs.map((l,idx)=>({...l,idx})).slice().reverse().map(l=>`<div class="item"><div class="top"><div><b>${new Date(l.date).toLocaleDateString()} — ${l.dayName}</b></div><button class="btn danger smallbtn" onclick="deleteWorkout(${l.idx})">Delete</button></div><div class="mini">${l.entries.map(e=>`${e.name}: ${e.total||"—"} lb × ${(e.reps||[]).filter(Boolean).join("/")}`).join("<br>")}</div></div>`).join(""):"No workouts yet."}
+function renderNutrition(){let meals=(state.nutrition.meals||[]).filter(m=>m.date===todayKey()),t=state.nutrition.targets,tot=meals.reduce((a,m)=>{a.protein+=Number(m.protein||0);a.fat+=Number(m.fat||0);a.carbs+=Number(m.carbs||0);a.calories+=Number(m.calories||0);return a},{protein:0,fat:0,carbs:0,calories:0});macroCards.innerHTML=[["Protein","protein","g"],["Fat","fat","g"],["Carbs","carbs","g"],["Calories","calories",""]].map(x=>{let rem=Math.max(0,t[x[1]]-tot[x[1]]),pct=Math.min(100,Math.round(tot[x[1]]/t[x[1]]*100));return`<div class="card"><div class="metric">${rem}${x[2]}</div><div class="label">${x[0]} remaining • ${tot[x[1]]}/${t[x[1]]}${x[2]}</div><div class="barwrap"><div class="barfill" style="width:${pct}%"></div></div></div>`}).join("");mealList.innerHTML=meals.length?meals.map(m=>`<div class="item"><b>${m.name||"Meal"}</b><div class="mini">P ${m.protein||0}g • F ${m.fat||0}g • C ${m.carbs||0}g • ${m.calories||0} cal</div></div>`).join(""):"No meals logged today.";renderBody()}
+function renderBody(){let bw=state.bodyweights;bodyWeightSummary.innerHTML=bw.length?`Last: <b>${bw.at(-1).weight} lb</b> • Start: ${bw[0].weight} lb • Change: ${(bw.at(-1).weight-bw[0].weight).toFixed(1)} lb`:"No weigh-ins yet.";let vals=bw.slice(-12).map(x=>Number(x.weight));let max=Math.max(...vals,1),min=Math.min(...vals,0);weightChart.innerHTML=vals.length?vals.map(v=>`<div class="col" style="height:${20+(v-min)/(max-min||1)*90}px"></div>`).join(""):"";photoList.innerHTML=state.photoNotes.length?state.photoNotes.slice(-5).reverse().map(p=>`<div class="item"><b>${p.date}</b><div class="mini">${p.note}</div></div>`).join(""):"No photo notes yet."}
+function saveMeal(){state.nutrition.meals.push({date:todayKey(),name:mealName.value,protein:mealProtein.value,fat:mealFat.value,carbs:mealCarbs.value,calories:mealCalories.value});mealName.value=mealProtein.value=mealFat.value=mealCarbs.value=mealCalories.value="";save();renderNutrition()}
+function saveBodyWeight(){let v=Number(bodyWeightInput.value||0);if(!v)return alert("Enter bodyweight first.");state.bodyweights.push({date:todayKey(),weight:v});bodyWeightInput.value="";save();renderNutrition();render()}
+function savePhotoNote(){if(!photoNote.value.trim())return alert("Add a note first.");state.photoNotes.push({date:todayKey(),note:photoNote.value.trim()});photoNote.value="";save();renderNutrition()}
+
+function reducePlatesByPercent(plates, smith, percent){
+  if(!smith){
+    let w=total(plates,false);
+    return [Math.max(0,Math.round(w*(1-percent/100)))];
+  }
+  let side=(plates||[]).reduce((a,b)=>a+Number(b||0),0);
+  let reducedSide=Math.max(0,side*(1-percent/100));
+  return greedy(reducedSide);
+}
+function enableLayoffMode(){
+  let percent=Number(layoffPercent.value||25);
+  let weeks=Number(layoffWeeks.value||3);
+  if(!confirm(`Enable layoff mode? This will reduce current targets by about ${percent}% and rebuild over ${weeks} weeks.`)) return;
+  state.layoffMode={active:true,enabledAt:new Date().toISOString(),percent,weeks,workoutsCompleted:0,originalSplit:JSON.parse(JSON.stringify(state.split))};
+  state.split.forEach(day=>{
+    if(day.rest) return;
+    day.exercises.forEach(e=>{
+      e.plates=reducePlatesByPercent(e.plates,e.smith,percent);
+    });
+  });
+  state.coaching={};
+  save();
+  render();
+  alert("Layoff mode enabled. Start lighter and build back up.");
+}
+function disableLayoffMode(){
+  if(!state.layoffMode?.active){alert("Layoff mode is already inactive.");return}
+  if(confirm("Disable layoff mode? Current targets will stay where they are.")){
+    state.layoffMode.active=false;
+    save();
+    render();
+  }
+}
+function layoffCoachMessage(){
+  if(!state.layoffMode?.active) return "";
+  let completed=state.layoffMode.workoutsCompleted||0;
+  let total=Math.max(1,(state.layoffMode.weeks||3)*6);
+  let pct=Math.min(100,Math.round(completed/total*100));
+  return `<div class="rec good"><b>Returning After Layoff Mode Active</b><br>Rebuild phase progress: ${completed}/${total} workouts (${pct}%). Focus on clean reps, no failure, and let the app ramp you back up.</div>`;
+}
+function progressLayoffMode(){
+  if(!state.layoffMode?.active) return;
+  state.layoffMode.workoutsCompleted=(state.layoffMode.workoutsCompleted||0)+1;
+  let total=Math.max(1,(state.layoffMode.weeks||3)*6);
+  if(state.layoffMode.workoutsCompleted>=total){
+    state.layoffMode.active=false;
+    alert("Layoff mode complete. Normal coaching is now active.");
+  }
+}
+
+function renderSettings(){bar.value=state.settings.bar;jump.value=state.settings.jump;goalBench.value=state.goals.bench;goalSquat.value=state.goals.squat;goalDeadlift.value=state.goals.deadlift;goalOHP.value=state.goals.ohp;if(document.getElementById("layoffPercent")){layoffPercent.value=state.layoffMode?.percent||25;layoffWeeks.value=state.layoffMode?.weeks||3;layoffStatus.textContent=state.layoffMode?.active?`Active • ${state.layoffMode.workoutsCompleted||0} workouts completed`:"Layoff mode inactive.";}}
+function saveSettings(){state.settings.bar=Number(bar.value||25);state.settings.jump=Number(jump.value||5);save();render();alert("Settings saved")}
+function saveGoals(){state.goals={bench:Number(goalBench.value||225),squat:Number(goalSquat.value||315),deadlift:Number(goalDeadlift.value||405),ohp:Number(goalOHP.value||135)};save();render();alert("Goals saved")}
+function nextDay(){state.currentDay=(state.currentDay+1)%state.split.length;save();render()}
+function exportData(){exportBox.value=JSON.stringify(state,null,2)}
+function resetData(){if(confirm("Reset everything?")){localStorage.removeItem("atlasV3");location.reload()}}
+ensure();save();wireAutosave();render();
+</script>
+</body>
+</html>
